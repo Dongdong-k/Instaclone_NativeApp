@@ -6,31 +6,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { Asset } from "expo-asset";
 
 export default function App() {
-  // method 1 - AppLoading
-  // loading 컴포넌트 생성하기 : default True
-  /*
-  const [loading, setLoading] = useState(true);
-  const onFinish = () => setLoading(false);
-  const preload = async () => {
-    const fontToLoad = [Ionicons.font];
-    const fontPromises = fontToLoad.map((font) => Font.loadAsync(font));
-    console.log("fontPromises", fontPromises);
-    await Promise.all(fontPromises);
-  };
-  // loading = ture, 로딩중 표시
-  if (loading) {
-    return (
-      <AppLoading
-        startAsync={preload}
-        onFinish={onFinish}
-        onError={console.warn}
-      />
-    );
-  }
-  */
-
   // method 2 - SplashScreen
   const [appIsReady, setAppIsReady] = useState(false);
 
@@ -39,10 +17,8 @@ export default function App() {
       try {
         // Keep the splash screen visible while we fetch resources
         await SplashScreen.preventAutoHideAsync(); // hideAsync 실행되기 전까지 스플래시 스크린 띄우기
-        // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(Ionicons.font); // 폰트 로딩하기
-        // Artificially delay for two seconds to simulate a slow loading
-        // experience. Please remove this if you copy and paste the code!
+        await Asset.loadAsync([require("./assets/logo.png")]); // 이미지 로딩하기
       } catch (e) {
         console.warn(e);
       } finally {
@@ -58,15 +34,9 @@ export default function App() {
   // appIsReady 값 변경 전까지 로딩시 SplashScreen.hideAsync() 함수 사용가능
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
       await SplashScreen.hideAsync(); // 프리로딩 완료 후 splash screen 을 숨기기
     }
   }, [appIsReady]);
-  console.log(onLayoutRootView);
 
   if (!appIsReady) {
     return null;
