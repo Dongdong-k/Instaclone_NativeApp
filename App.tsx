@@ -7,6 +7,8 @@ import { Entypo } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
+import { NavigationContainer } from "@react-navigation/native";
+import LoggedOutNav from "./navigators/LoggedOutNav";
 
 export default function App() {
   // method 2 - SplashScreen
@@ -48,11 +50,9 @@ export default function App() {
   // but the new layout may not yet be reflected on the screen at the time
   // the event is received, especially if a layout animation is in progress.
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <Text>안녕하세요</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer onReady={onLayoutRootView}>
+      <LoggedOutNav />
+    </NavigationContainer>
   );
 }
 
