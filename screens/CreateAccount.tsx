@@ -1,10 +1,12 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 
-export default function CreateAccount() {
+export default function CreateAccount({ navigation }: any) {
   return (
-    <View>
-      <Text>CreateAccount</Text>
-    </View>
+    <TouchableOpacity onPress={() => navigation.navigate("Welcome")}>
+      <View>
+        <Text>Home</Text>
+      </View>
+    </TouchableOpacity>
   );
 }

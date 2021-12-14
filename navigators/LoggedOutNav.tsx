@@ -4,6 +4,12 @@ import CreateAccount from "../screens/CreateAccount";
 import Login from "../screens/Login";
 import Welcome from "../screens/Welcome";
 
+type RootStackParamList = {
+  Welcome: undefined;
+  Login: undefined;
+  CreateAccount: undefined;
+};
+
 const Stack = createNativeStackNavigator();
 
 // 스택 네비게이터 반환 필요
