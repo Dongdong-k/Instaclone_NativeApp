@@ -1,7 +1,14 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
+import { Appearance } from "react-native-appearance";
 
 export default function Welcome({ navigation }: any) {
+  // 현재 테마 가져오기
+  const colorScheme = Appearance.getColorScheme();
+  // 테마 변경시 변경내역 가져오기
+  const colorSubscription = Appearance.addChangeListener(({ colorScheme }) => {
+    console.log(colorSubscription);
+  });
   return (
     <View>
       <TouchableOpacity onPress={() => navigation.navigate("CreateAccount")}>
