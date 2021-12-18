@@ -27,8 +27,16 @@ export default function LoggedOutNav() {
         animation: "slide_from_right",
       }}
     >
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Welcome" component={Welcome} />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Welcome"
+        component={Welcome}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="CreateAccount" component={CreateAccount} />
     </Stack.Navigator>
   );
