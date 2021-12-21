@@ -22,22 +22,24 @@ export default function LoggedOutNav() {
       screenOptions={{
         presentation: "card",
         headerBackTitleVisible: false,
-        headerTintColor: "darkgreen",
         headerTitleAlign: "center",
         animation: "slide_from_right",
+        headerShown: false,
       }}
     >
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{ headerShown: false }}
+        name="CreateAccount"
+        component={CreateAccount}
+        options={{
+          headerShown: true,
+          headerTitle: "",
+          headerTransparent: true,
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: "black" },
+        }}
       />
-      <Stack.Screen
-        name="Welcome"
-        component={Welcome}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen name="CreateAccount" component={CreateAccount} />
     </Stack.Navigator>
   );
 }
