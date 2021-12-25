@@ -1,5 +1,13 @@
 import React, { useRef } from "react";
-import { Text, View, TouchableOpacity, TextInput, Alert } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import styled from "styled-components/native";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -27,54 +35,64 @@ export default function CreateAccount({ navigation }: any) {
 
   return (
     <AuthLayout>
-      <TextInput
-        autoFocus={true}
-        style={{ backgroundColor: "white", width: "100%" }}
-        placeholder="First Name"
-        placeholderTextColor={"gray"}
-        returnKeyType="next"
-        onSubmitEditing={() => onNext(lastNameRef)}
-        blurOnSubmit={false}
-      />
-      <TextInput
-        ref={lastNameRef}
-        onSubmitEditing={() => onNext(userNameRef)}
-        style={{ backgroundColor: "white", width: "100%" }}
-        placeholder="Last Name"
-        placeholderTextColor={"gray"}
-        returnKeyType="next"
-        blurOnSubmit={false}
-      />
-      <TextInput
-        ref={userNameRef}
-        onSubmitEditing={() => onNext(emailRef)}
-        style={{ backgroundColor: "white", width: "100%" }}
-        placeholder="Username"
-        placeholderTextColor={"gray"}
-        returnKeyType="next"
-        blurOnSubmit={false}
-      />
-      <TextInput
-        ref={emailRef}
-        onSubmitEditing={() => onNext(passwordRef)}
-        style={{ backgroundColor: "white", width: "100%" }}
-        placeholder="Email"
-        placeholderTextColor={"gray"}
-        keyboardType="email-address"
-        returnKeyType="next"
-        blurOnSubmit={false}
-      />
-      <TextInput
-        ref={passwordRef}
-        style={{ backgroundColor: "white", width: "100%" }}
-        placeholder="Password"
-        placeholderTextColor={"gray"}
-        secureTextEntry
-        returnKeyType="done"
-        blurOnSubmit={false}
-        onSubmitEditing={() => onDone()}
-      />
-      <AuthButton disabled={true} text="Create Account" onPress={() => null} />
+      <KeyboardAvoidingView
+        behavior="padding"
+        keyboardVerticalOffset={Platform.OS === "ios" ? 150 : -300}
+        style={{ width: "100%" }}
+      >
+        <TextInput
+          autoFocus={true}
+          style={{ backgroundColor: "white", width: "100%" }}
+          placeholder="First Name"
+          placeholderTextColor={"gray"}
+          returnKeyType="next"
+          onSubmitEditing={() => onNext(lastNameRef)}
+          blurOnSubmit={false}
+        />
+        <TextInput
+          ref={lastNameRef}
+          onSubmitEditing={() => onNext(userNameRef)}
+          style={{ backgroundColor: "white", width: "100%" }}
+          placeholder="Last Name"
+          placeholderTextColor={"gray"}
+          returnKeyType="next"
+          blurOnSubmit={false}
+        />
+        <TextInput
+          ref={userNameRef}
+          onSubmitEditing={() => onNext(emailRef)}
+          style={{ backgroundColor: "white", width: "100%" }}
+          placeholder="Username"
+          placeholderTextColor={"gray"}
+          returnKeyType="next"
+          blurOnSubmit={false}
+        />
+        <TextInput
+          ref={emailRef}
+          onSubmitEditing={() => onNext(passwordRef)}
+          style={{ backgroundColor: "white", width: "100%" }}
+          placeholder="Email"
+          placeholderTextColor={"gray"}
+          keyboardType="email-address"
+          returnKeyType="next"
+          blurOnSubmit={false}
+        />
+        <TextInput
+          ref={passwordRef}
+          style={{ backgroundColor: "white", width: "100%" }}
+          placeholder="Password"
+          placeholderTextColor={"gray"}
+          secureTextEntry
+          returnKeyType="done"
+          blurOnSubmit={false}
+          onSubmitEditing={() => onDone()}
+        />
+        <AuthButton
+          disabled={true}
+          text="Create Account"
+          onPress={() => null}
+        />
+      </KeyboardAvoidingView>
     </AuthLayout>
   );
 }
