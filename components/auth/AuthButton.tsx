@@ -5,7 +5,7 @@ import { color } from "../../color";
 // View 대신 바로 TouchableOpacity 사용 가능
 const Button = styled.TouchableOpacity`
   background-color: ${color.blue};
-  padding: 13px 10px;
+  padding: 15px 10px;
   margin-top: 20px;
   border-radius: 3px;
   width: 100%;

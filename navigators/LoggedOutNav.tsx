@@ -25,30 +25,21 @@ export default function LoggedOutNav() {
         headerTitleAlign: "center",
         animation: "slide_from_right",
         headerShown: false,
+        headerTransparent: true,
+        headerTintColor: "white",
+        headerStyle: { backgroundColor: "black" },
       }}
     >
       <Stack.Screen
         name="Login"
         component={Login}
-        options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerTintColor: "white",
-          headerStyle: { backgroundColor: "black" },
-          title: "",
-        }}
+        options={{ headerShown: true, title: "" }}
       />
       <Stack.Screen name="Welcome" component={Welcome} />
       <Stack.Screen
         name="CreateAccount"
         component={CreateAccount}
-        options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerTintColor: "white",
-          headerStyle: { backgroundColor: "black" },
-          title: "",
-        }}
+        options={{ headerShown: true, title: "" }}
       />
     </Stack.Navigator>
   );

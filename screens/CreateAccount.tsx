@@ -1,24 +1,9 @@
 import React, { useRef } from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import styled from "styled-components/native";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
-
-const Container = styled.View`
-  flex: 1;
-  background-color: black;
-  justify-content: center;
-  align-items: center;
-  padding: 0px 40px;
-`;
+import { TextInputForm } from "../components/auth/AuthShared";
 
 export default function CreateAccount({ navigation }: any) {
   //useRef<TextInput | null>타입 정의 필요 :
@@ -35,64 +20,50 @@ export default function CreateAccount({ navigation }: any) {
 
   return (
     <AuthLayout>
-      <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 150 : -300}
-        style={{ width: "100%" }}
-      >
-        <TextInput
-          autoFocus={true}
-          style={{ backgroundColor: "white", width: "100%" }}
-          placeholder="First Name"
-          placeholderTextColor={"gray"}
-          returnKeyType="next"
-          onSubmitEditing={() => onNext(lastNameRef)}
-          blurOnSubmit={false}
-        />
-        <TextInput
-          ref={lastNameRef}
-          onSubmitEditing={() => onNext(userNameRef)}
-          style={{ backgroundColor: "white", width: "100%" }}
-          placeholder="Last Name"
-          placeholderTextColor={"gray"}
-          returnKeyType="next"
-          blurOnSubmit={false}
-        />
-        <TextInput
-          ref={userNameRef}
-          onSubmitEditing={() => onNext(emailRef)}
-          style={{ backgroundColor: "white", width: "100%" }}
-          placeholder="Username"
-          placeholderTextColor={"gray"}
-          returnKeyType="next"
-          blurOnSubmit={false}
-        />
-        <TextInput
-          ref={emailRef}
-          onSubmitEditing={() => onNext(passwordRef)}
-          style={{ backgroundColor: "white", width: "100%" }}
-          placeholder="Email"
-          placeholderTextColor={"gray"}
-          keyboardType="email-address"
-          returnKeyType="next"
-          blurOnSubmit={false}
-        />
-        <TextInput
-          ref={passwordRef}
-          style={{ backgroundColor: "white", width: "100%" }}
-          placeholder="Password"
-          placeholderTextColor={"gray"}
-          secureTextEntry
-          returnKeyType="done"
-          blurOnSubmit={false}
-          onSubmitEditing={() => onDone()}
-        />
-        <AuthButton
-          disabled={true}
-          text="Create Account"
-          onPress={() => null}
-        />
-      </KeyboardAvoidingView>
+      <TextInputForm
+        autoFocus={true}
+        placeholder="First Name"
+        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        returnKeyType="next"
+        onSubmitEditing={() => onNext(lastNameRef)}
+        blurOnSubmit={false}
+      />
+      <TextInputForm
+        ref={lastNameRef}
+        onSubmitEditing={() => onNext(userNameRef)}
+        placeholder="Last Name"
+        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        returnKeyType="next"
+        blurOnSubmit={false}
+      />
+      <TextInputForm
+        ref={userNameRef}
+        onSubmitEditing={() => onNext(emailRef)}
+        placeholder="User Name"
+        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        returnKeyType="next"
+        blurOnSubmit={false}
+      />
+      <TextInputForm
+        ref={emailRef}
+        onSubmitEditing={() => onNext(passwordRef)}
+        placeholder="Email"
+        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        keyboardType="email-address"
+        returnKeyType="next"
+        blurOnSubmit={false}
+      />
+      <TextInputForm
+        ref={passwordRef}
+        placeholder="Password"
+        placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
+        secureTextEntry
+        returnKeyType="done"
+        blurOnSubmit={false}
+        onSubmitEditing={() => onDone()}
+        lastOne={true}
+      />
+      <AuthButton disabled={true} text="Create Account" onPress={() => null} />
     </AuthLayout>
   );
 }
