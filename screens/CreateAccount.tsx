@@ -1,3 +1,4 @@
+import { gql, useMutation } from "@apollo/client";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
@@ -6,17 +7,63 @@ import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInputForm } from "../components/auth/AuthShared";
 
+const CREATE_ACCOUNT_MUTATION = gql`
+  mutation CreateAccount(
+    $firstname: String!
+    $lastname: String
+    $username: String!
+    $email: String!
+    $password: String!
+  ) {
+    createAccount(
+      firstName: $firstname
+      lastName: $lastname
+      userName: $username
+      email: $email
+      password: $password
+    ) {
+      ok
+      error
+    }
+  }
+`;
+
 export default function CreateAccount({ navigation }: any) {
+  const { register, handleSubmit, setValue, watch, getValues } = useForm();
   //useRef<TextInput | null>타입 정의 필요 :
   const lastNameRef = useRef<TextInput>(null);
   const userNameRef = useRef<TextInput>(null);
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
+  const onCompleted = (data: any) => {
+    const {
+      createAccount: { ok, error },
+    } = data;
+    const { username, password } = getValues();
+    // 계정 생성 성공시, 로그인창 이동 & 아이디/패스워드 자동입력
+    if (ok) {
+      navigation.navigate("Login", {
+        username,
+        password,
+      });
+    }
+  };
+
+  const [createAccountMutation, { loading }] = useMutation(
+    CREATE_ACCOUNT_MUTATION,
+    { onCompleted }
+  );
+
   // useForm Hook 사용
-  const { register, handleSubmit, setValue, watch } = useForm();
   const onValid = (data: any) => {
-    console.log(data);
+    if (!loading) {
+      createAccountMutation({
+        variables: {
+          ...data,
+        },
+      });
+    }
   };
   useEffect(() => {
     {
@@ -84,7 +131,7 @@ export default function CreateAccount({ navigation }: any) {
         onSubmitEditing={handleSubmit(onValid)}
       />
       <AuthButton
-        loading={false}
+        loading={loading}
         disabled={
           !watch("firstname") ||
           !watch("lastname") ||

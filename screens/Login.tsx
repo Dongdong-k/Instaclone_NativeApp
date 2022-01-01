@@ -19,7 +19,7 @@ const LOGIN_MUTATION = gql`
   }
 `;
 
-export default function Login({ navigation }: any) {
+export default function Login({ navigation, route }: any) {
   const passwordRef = useRef<TextInput>(null);
   const onNext = (Nextone: any) => Nextone?.current?.focus();
   const onCompleted = (data: any) => {
@@ -28,14 +28,18 @@ export default function Login({ navigation }: any) {
     } = data;
     if (ok) {
       isLoggedInVar(true);
-      console.log(ok, isLoggedInVar);
     }
   };
   const [LogInMutation, { loading }] = useMutation(LOGIN_MUTATION, {
     onCompleted,
   });
 
-  const { register, handleSubmit, setValue, watch } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm({
+    defaultValues: {
+      username: route?.params?.username,
+      password: route?.params?.password,
+    },
+  });
   const onValid = (data: any) => {
     if (!loading) {
       LogInMutation({
@@ -56,6 +60,7 @@ export default function Login({ navigation }: any) {
   return (
     <AuthLayout>
       <TextInputForm
+        value={watch("username")}
         placeholder="User Name"
         placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
         returnKeyType="next"
@@ -66,6 +71,7 @@ export default function Login({ navigation }: any) {
         // onChange={(e) => setValue("username", e.nativeEvent.text)}
       />
       <TextInputForm
+        value={watch("password")}
         ref={passwordRef}
         placeholder="Password"
         placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
