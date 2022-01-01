@@ -13,6 +13,7 @@ export default function CreateAccount({ navigation }: any) {
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
+  // useForm Hook 사용
   const { register, handleSubmit, setValue } = useForm();
   const onValid = (data: any) => {
     console.log(data);
@@ -31,9 +32,7 @@ export default function CreateAccount({ navigation }: any) {
 
   // enter 입력시 이동기능
   const onNext = (nextOne: any) => nextOne?.current?.focus();
-  const onDone = () => {
-    alert("good");
-  };
+
   return (
     <AuthLayout>
       <TextInputForm
@@ -80,9 +79,9 @@ export default function CreateAccount({ navigation }: any) {
         secureTextEntry
         returnKeyType="done"
         blurOnSubmit={false}
-        onSubmitEditing={handleSubmit(onValid)}
         lastOne={true}
         onChangeText={(text) => setValue("password", text)}
+        onSubmitEditing={handleSubmit(onValid)}
       />
       <AuthButton
         loading

@@ -9,6 +9,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import LoggedOutNav from "./navigators/LoggedOutNav";
+import { ApolloProvider } from "@apollo/client";
+import client from "./ApolloClient";
 
 export default function App() {
   // method 2 - SplashScreen
@@ -50,9 +52,11 @@ export default function App() {
   // but the new layout may not yet be reflected on the screen at the time
   // the event is received, especially if a layout animation is in progress.
   return (
-    <NavigationContainer onReady={onLayoutRootView}>
-      <LoggedOutNav />
-    </NavigationContainer>
+    <ApolloProvider client={client}>
+      <NavigationContainer onReady={onLayoutRootView}>
+        <LoggedOutNav />
+      </NavigationContainer>
+    </ApolloProvider>
   );
 }
 

@@ -50,6 +50,7 @@ export default function Login({ navigation }: any) {
       />
       <AuthButton
         disabled={false}
+        loading
         text="Log In"
         onPress={handleSubmit(onValid)}
       />
