@@ -29,6 +29,7 @@ export default function AuthLayout({ children }: any) {
     <TouchableWithoutFeedback
       style={{ flex: 1 }}
       onPress={() => dismissKeyboard()}
+      disabled={Platform.OS === "web"}
     >
       <AuthContainer>
         <KeyboardAvoidingView

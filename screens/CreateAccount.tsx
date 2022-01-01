@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import styled from "styled-components/native";
 import AuthButton from "../components/auth/AuthButton";
@@ -12,12 +13,27 @@ export default function CreateAccount({ navigation }: any) {
   const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
 
+  const { register, handleSubmit, setValue } = useForm();
+  const onValid = (data: any) => {
+    console.log(data);
+  };
+  useEffect(() => {
+    {
+      register("firstname", {
+        required: { value: true, message: "Type your First Name" },
+      });
+      register("lastname", { required: true });
+      register("username", { required: true });
+      register("email", { required: true });
+      register("password", { required: true });
+    }
+  }, [register]);
+
   // enter 입력시 이동기능
   const onNext = (nextOne: any) => nextOne?.current?.focus();
   const onDone = () => {
     alert("good");
   };
-
   return (
     <AuthLayout>
       <TextInputForm
@@ -27,6 +43,7 @@ export default function CreateAccount({ navigation }: any) {
         returnKeyType="next"
         onSubmitEditing={() => onNext(lastNameRef)}
         blurOnSubmit={false}
+        onChangeText={(text) => setValue("firstname", text)}
       />
       <TextInputForm
         ref={lastNameRef}
@@ -35,6 +52,7 @@ export default function CreateAccount({ navigation }: any) {
         placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
         returnKeyType="next"
         blurOnSubmit={false}
+        onChangeText={(text) => setValue("lastname", text)}
       />
       <TextInputForm
         ref={userNameRef}
@@ -43,6 +61,7 @@ export default function CreateAccount({ navigation }: any) {
         placeholderTextColor={"rgba(255, 255, 255, 0.8)"}
         returnKeyType="next"
         blurOnSubmit={false}
+        onChangeText={(text) => setValue("username", text)}
       />
       <TextInputForm
         ref={emailRef}
@@ -52,6 +71,7 @@ export default function CreateAccount({ navigation }: any) {
         keyboardType="email-address"
         returnKeyType="next"
         blurOnSubmit={false}
+        onChangeText={(text) => setValue("email", text)}
       />
       <TextInputForm
         ref={passwordRef}
@@ -60,10 +80,15 @@ export default function CreateAccount({ navigation }: any) {
         secureTextEntry
         returnKeyType="done"
         blurOnSubmit={false}
-        onSubmitEditing={() => onDone()}
+        onSubmitEditing={handleSubmit(onValid)}
         lastOne={true}
+        onChangeText={(text) => setValue("password", text)}
       />
-      <AuthButton disabled={true} text="Create Account" onPress={() => null} />
+      <AuthButton
+        loading
+        text="Create Account"
+        onPress={handleSubmit(onValid)}
+      />
     </AuthLayout>
   );
 }
