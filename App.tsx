@@ -9,12 +9,14 @@ import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import LoggedOutNav from "./navigators/LoggedOutNav";
-import { ApolloProvider } from "@apollo/client";
-import client from "./ApolloClient";
+import { ApolloProvider, useReactiveVar } from "@apollo/client";
+import client, { isLoggedInVar } from "./ApolloClient";
+import LoggedInNav from "./navigators/LoggedInNav";
 
 export default function App() {
   // method 2 - SplashScreen
   const [appIsReady, setAppIsReady] = useState(false);
+  const isLoggedIn = useReactiveVar(isLoggedInVar);
 
   useEffect(() => {
     async function prepare() {
@@ -51,10 +53,11 @@ export default function App() {
   // This event is fired immediately once the layout has been calculated,
   // but the new layout may not yet be reflected on the screen at the time
   // the event is received, especially if a layout animation is in progress.
+
   return (
     <ApolloProvider client={client}>
       <NavigationContainer onReady={onLayoutRootView}>
-        <LoggedOutNav />
+        {isLoggedIn ? <LoggedInNav /> : <LoggedOutNav />}
       </NavigationContainer>
     </ApolloProvider>
   );

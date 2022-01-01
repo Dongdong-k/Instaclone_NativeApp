@@ -14,7 +14,7 @@ export default function CreateAccount({ navigation }: any) {
   const passwordRef = useRef<TextInput>(null);
 
   // useForm Hook 사용
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit, setValue, watch } = useForm();
   const onValid = (data: any) => {
     console.log(data);
   };
@@ -84,7 +84,14 @@ export default function CreateAccount({ navigation }: any) {
         onSubmitEditing={handleSubmit(onValid)}
       />
       <AuthButton
-        loading
+        loading={false}
+        disabled={
+          !watch("firstname") ||
+          !watch("lastname") ||
+          !watch("username") ||
+          !watch("email") ||
+          !watch("password")
+        }
         text="Create Account"
         onPress={handleSubmit(onValid)}
       />
