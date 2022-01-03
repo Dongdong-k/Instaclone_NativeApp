@@ -10,17 +10,24 @@ import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import LoggedOutNav from "./navigators/LoggedOutNav";
 import { ApolloProvider, useReactiveVar } from "@apollo/client";
-import client, { isLoggedInVar } from "./ApolloClient";
+import client, { isLoggedInVar, tokenVar } from "./ApolloClient";
 import LoggedInNav from "./navigators/LoggedInNav";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function App() {
   // method 2 - SplashScreen
   const [appIsReady, setAppIsReady] = useState(false);
-  const isLoggedIn = useReactiveVar(isLoggedInVar);
+  const isLoggedIn = useReactiveVar(isLoggedInVar); // 로그인 변수 가져오기
 
   useEffect(() => {
     async function prepare() {
       try {
+        // token 값 가져오기 & 유효한 경우 로그인
+        const token = await AsyncStorage.getItem("token");
+        if (token) {
+          isLoggedInVar(true);
+          tokenVar(token); // AsyncStorage 이용하는 것 보다 빠름
+        }
         // Keep the splash screen visible while we fetch resources
         await SplashScreen.preventAutoHideAsync(); // hideAsync 실행되기 전까지 스플래시 스크린 띄우기
         await Font.loadAsync(Ionicons.font); // 폰트 로딩하기
@@ -32,7 +39,6 @@ export default function App() {
         setAppIsReady(true); // appIsReady : false -> true
       }
     }
-
     prepare();
   }, []);
 

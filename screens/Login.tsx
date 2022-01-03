@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Platform, Text, TextInput } from "react-native";
 import styled from "styled-components/native";
-import { isLoggedInVar } from "../ApolloClient";
+import { isLoggedInVar, logUserIn } from "../ApolloClient";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInputForm } from "../components/auth/AuthShared";
@@ -22,12 +22,14 @@ const LOGIN_MUTATION = gql`
 export default function Login({ navigation, route }: any) {
   const passwordRef = useRef<TextInput>(null);
   const onNext = (Nextone: any) => Nextone?.current?.focus();
-  const onCompleted = (data: any) => {
+  const onCompleted = async (data: any) => {
+    console.log(data);
     const {
       login: { ok, token },
     } = data;
     if (ok) {
-      isLoggedInVar(true);
+      console.log("change logUserIn");
+      await logUserIn(token);
     }
   };
   const [LogInMutation, { loading }] = useMutation(LOGIN_MUTATION, {
@@ -41,6 +43,7 @@ export default function Login({ navigation, route }: any) {
     },
   });
   const onValid = (data: any) => {
+    console.log("onValid");
     if (!loading) {
       LogInMutation({
         variables: {

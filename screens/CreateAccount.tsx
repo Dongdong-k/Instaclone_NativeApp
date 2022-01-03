@@ -37,6 +37,7 @@ export default function CreateAccount({ navigation }: any) {
   const passwordRef = useRef<TextInput>(null);
 
   const onCompleted = (data: any) => {
+    console.log("create account result : ", data);
     const {
       createAccount: { ok, error },
     } = data;
