@@ -1,13 +1,13 @@
 import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// 로그인 여부 변수 생성 & false 설정
-export const isLoggedInVar = makeVar(false);
-export const tokenVar = makeVar("");
+// 로그인 관련 변수 생성 & false 설정
+export const isLoggedInVar = makeVar(false); // 로그인 여부 확인
+export const tokenVar = makeVar(""); // 로그인 유저 확인
 
 // 로그인시 token 값 가져오면 값 저장하기
 export const logUserIn = async (token: any) => {
-  await AsyncStorage.setItem("token", JSON.stringify(token));
+  await AsyncStorage.setItem("token", token);
   isLoggedInVar(true);
   tokenVar(token);
 };
