@@ -4,8 +4,8 @@ import React from "react";
 import Search from "../screens/Search";
 import Notification from "../screens/Notification";
 import Profile from "../screens/Profile";
-import { Ionicons } from "@expo/vector-icons";
-import { color } from "../color";
+import { View } from "react-native";
+import TabIcon from "../components/nav/TabIcon";
 
 const Tabs = createBottomTabNavigator();
 
@@ -28,7 +28,7 @@ export default function LoggedInNav() {
         name="Feed"
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons name="home" color={color} size={focused ? 24 : 20} />
+            <TabIcon focused={focused} color={color} iconName={"home"} />
           ),
         }}
       />
@@ -37,7 +37,16 @@ export default function LoggedInNav() {
         name="Search"
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons name="search" color={color} size={focused ? 24 : 20} />
+            <TabIcon focused={focused} color={color} iconName={"search"} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        component={View}
+        name="Camera"
+        options={{
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon focused={focused} color={color} iconName={"camera"} />
           ),
         }}
       />
@@ -46,11 +55,7 @@ export default function LoggedInNav() {
         name="Notification"
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name="heart-outline"
-              color={color}
-              size={focused ? 28 : 22}
-            />
+            <TabIcon focused={focused} color={color} iconName={"heart"} />
           ),
         }}
       />
@@ -59,7 +64,7 @@ export default function LoggedInNav() {
         name="Profile"
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons name="person" color={color} size={focused ? 24 : 20} />
+            <TabIcon focused={focused} color={color} iconName={"person"} />
           ),
         }}
       />
