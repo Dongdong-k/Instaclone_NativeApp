@@ -2,19 +2,19 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 
-const SearchContainer = styled.View({
+const PhotoContainer = styled.View({
   flex: 1,
   backgroundColor: "black",
   alignItems: "center",
   justifyContent: "center",
 });
 
-export default function Search({ navigation }: any) {
+export default function Photo({ navigation }: any) {
   return (
-    <SearchContainer>
-      <TouchableOpacity onPress={() => navigation.navigate("Photo")}>
-        <Text style={{ color: "white" }}>Photo</Text>
+    <PhotoContainer>
+      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+        <Text style={{ color: "white" }}>Profile</Text>
       </TouchableOpacity>
-    </SearchContainer>
+    </PhotoContainer>
   );
 }
