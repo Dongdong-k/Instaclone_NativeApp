@@ -63,17 +63,9 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer onReady={onLayoutRootView}>
+        <StatusBar backgroundColor="black" translucent={true} />
         {isLoggedIn ? <LoggedInNav /> : <LoggedOutNav />}
       </NavigationContainer>
     </ApolloProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

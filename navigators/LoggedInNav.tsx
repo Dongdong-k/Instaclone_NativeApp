@@ -1,7 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { setStatusBarBackgroundColor } from "expo-status-bar";
 import React from "react";
 import TabIcon from "../components/nav/TabIcon";
-import StackNavFactory from "../components/nav/StackNavFactory";
+import StackNavFactory from "./StackNavFactory";
 
 const Tabs = createBottomTabNavigator();
 
