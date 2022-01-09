@@ -1,16 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import styled from "styled-components/native";
-import { logUserOut } from "../ApolloClient";
+import PhotoContainer from "../components/PhotoContainer";
+import ScreenLayout from "../components/ScreenLayout";
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../Fragments";
-
-const FeedContainer = styled.View({
-  flex: 1,
-  backgroundColor: "black",
-  alignItems: "center",
-  justifyContent: "center",
-});
 
 const FEED_QUERY = gql`
   query seeFeed {
@@ -33,14 +27,21 @@ const FEED_QUERY = gql`
 `;
 
 export default function Feed() {
-  const { data } = useQuery(FEED_QUERY);
-  console.log(data);
+  const { data, loading } = useQuery(FEED_QUERY);
+
+  const renderPhoto = ({ item: photo }: any) => {
+    return <PhotoContainer {...photo} />;
+  };
 
   return (
-    <FeedContainer>
-      <TouchableOpacity onPress={() => logUserOut()}>
-        <Text style={{ color: "white" }}>Log Out</Text>
-      </TouchableOpacity>
-    </FeedContainer>
+    <ScreenLayout loading={loading}>
+      <FlatList
+        style={{ width: "100%" }}
+        data={data?.seeFeed}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(photo) => photo.id}
+        renderItem={renderPhoto}
+      />
+    </ScreenLayout>
   );
 }

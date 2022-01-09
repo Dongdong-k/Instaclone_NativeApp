@@ -1,8 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform, TextInput } from "react-native";
-import styled from "styled-components/native";
+import { TextInput } from "react-native";
 import AuthButton from "../components/auth/AuthButton";
 import AuthLayout from "../components/auth/AuthLayout";
 import { TextInputForm } from "../components/auth/AuthShared";

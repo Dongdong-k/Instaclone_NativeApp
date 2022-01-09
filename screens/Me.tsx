@@ -1,6 +1,7 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
+import { logUserOut } from "../ApolloClient";
 
 const MeContainer = styled.View({
   flex: 1,
@@ -12,7 +13,9 @@ const MeContainer = styled.View({
 export default function Me() {
   return (
     <MeContainer>
-      <Text style={{ color: "white" }}>Me</Text>
+      <TouchableOpacity onPress={() => logUserOut()}>
+        <Text style={{ color: "white" }}>Me</Text>
+      </TouchableOpacity>
     </MeContainer>
   );
 }
