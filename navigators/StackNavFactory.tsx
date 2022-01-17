@@ -1,7 +1,9 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { Image } from "react-native";
+import Comments from "../screens/Comments";
 import Feed from "../screens/Feed";
+import Likes from "../screens/Likes";
 import Me from "../screens/Me";
 import Notification from "../screens/Notification";
 import Photo from "../screens/Photo";
@@ -54,6 +56,8 @@ export default function StackNavFactory({ screenName }: any) {
       {screenName === "Me" ? <Stack.Screen name="Me" component={Me} /> : null}
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Photo" component={Photo} />
+      <Stack.Screen name="Likes" component={Likes} />
+      <Stack.Screen name="Comments" component={Comments} />
     </Stack.Navigator>
   );
 }

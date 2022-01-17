@@ -1,8 +1,17 @@
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
-import { Image, Text, useWindowDimensions } from "react-native";
+import {
+  FlatList,
+  Image,
+  SectionList,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled from "styled-components/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Container = styled.View`
   border: solid 1px green;
@@ -14,26 +23,56 @@ const Header = styled.TouchableOpacity`
 `;
 const UserAvatar = styled.Image`
   margin-right: 10px;
-  width: 25;
-  height: 25;
-  border-radius: 15;
+  width: 25px;
+  height: 25px;
+  border-radius: 12.5px;
 `;
+const UserAvatarNull = styled.Image`
+  margin-right: 10px;
+  width: 25px;
+  height: 25px;
+  border-radius: 12.5px;
+  background-color: gray;
+`;
+
 const UserName = styled.Text`
   color: white;
   font-weight: 600;
 `;
 const File = styled.Image``;
-const Actions = styled.View``;
-const Action = styled.TouchableOpacity``;
+const Actions = styled.View`
+  flex-direction: row;
+  align-items: center;
+`;
+const Action = styled.TouchableOpacity`
+  margin-right: 10px;
+`;
 const Likes = styled.Text`
   color: white;
+  margin: 5px 0px;
+  font-weight: 600;
 `;
 const Caption = styled.View`
   flex-direction: row;
+  margin-left: 5px;
 `;
 const CaptionText = styled.Text`
   color: white;
   margin-left: 10px;
+`;
+const ExtraContainer = styled.View`
+  padding: 10px;
+`;
+const Comments = styled.View`
+  flex-direction: row;
+  margin-left: 5px;
+`;
+const CommentUsername = styled.Text`
+  color: white;
+  margin-right: 10px;
+`;
+const Comment = styled.Text`
+  color: white;
 `;
 
 interface seeFeed_seeFeed {
@@ -65,6 +104,15 @@ interface seeFeed_seeFeed_comments {
   createdAt: string;
 }
 
+type RootStackParamList = {
+  Profile: undefined;
+  Likes: undefined;
+  Comments: undefined;
+  Photo: undefined;
+};
+
+type ProfileScreenProp = StackNavigationProp<RootStackParamList, "Profile">;
+
 export default function PhotoContainer({
   id,
   user,
@@ -77,7 +125,16 @@ export default function PhotoContainer({
   // 스크린 사이즈 받아오기
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const [imageHeight, setImageHeight] = useState(windowHeight - 500);
-  const navigation = useNavigation();
+  const navigation = useNavigation<ProfileScreenProp>();
+  // Commnet 화면
+  const renderComment = ({ item }: any) => {
+    return (
+      <Comments>
+        <CommentUsername>{item?.user.userName}</CommentUsername>
+        <Comment>{item?.payload}</Comment>
+      </Comments>
+    );
+  };
   // 스크린 사이즈 받아와서 width 설정 & height 크기도 화면보다 클 경우 화면 크기로 설정
   useEffect(() => {
     Image.getSize(file, (width, height) => {
@@ -92,7 +149,11 @@ export default function PhotoContainer({
   return (
     <Container>
       <Header onPress={() => navigation.navigate("Profile")}>
-        <UserAvatar source={{ uri: user?.avatar }} resizeMode="cover" />
+        {user.avatar ? (
+          <UserAvatar source={{ uri: user?.avatar }} resizeMode="cover" />
+        ) : (
+          <UserAvatarNull source={{ uri: undefined }} />
+        )}
         <UserName>{user?.userName}</UserName>
       </Header>
       <File
@@ -103,17 +164,29 @@ export default function PhotoContainer({
         resizeMode="cover"
         source={{ uri: file }}
       />
-      <Actions>
-        <Action />
-        <Action />
-      </Actions>
-      <Likes>{likes === 1 ? "1 like" : `${likes} likes`}</Likes>
-      <Caption>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-          <UserName>{user?.userName}</UserName>
+      <ExtraContainer>
+        <Actions>
+          <Action>
+            <Ionicons
+              name={isLiked ? "heart" : "heart-outline"}
+              color={isLiked ? "tomato" : "white"}
+              size={22}
+            />
+          </Action>
+          <Action onPress={() => navigation.navigate("Comments")}>
+            <Ionicons name="chatbubble-outline" color={"white"} size={22} />
+          </Action>
+        </Actions>
+        <TouchableOpacity onPress={() => navigation.navigate("Likes")}>
+          <Likes>{likes === 1 ? "1 like" : `${likes} likes`}</Likes>
         </TouchableOpacity>
-        <CaptionText>{caption}</CaptionText>
-      </Caption>
+        <Caption>
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+            <UserName>{user?.userName}</UserName>
+          </TouchableOpacity>
+          <CaptionText>{caption}</CaptionText>
+        </Caption>
+      </ExtraContainer>
     </Container>
   );
 }
