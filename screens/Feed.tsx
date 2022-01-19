@@ -7,8 +7,8 @@ import ScreenLayout from "../components/ScreenLayout";
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../Fragments";
 
 const FEED_QUERY = gql`
-  query seeFeed {
-    seeFeed {
+  query seeFeed($offset: Int!) {
+    seeFeed(offset: $offset) {
       ...PhotoFragment
       user {
         userName
@@ -27,7 +27,12 @@ const FEED_QUERY = gql`
 `;
 
 export default function Feed() {
-  const { data, loading, refetch } = useQuery(FEED_QUERY);
+  // refetch to refresh Feed
+  const { data, loading, refetch, fetchMore } = useQuery(FEED_QUERY, {
+    variables: {
+      offset: 0,
+    },
+  });
 
   // Pull to Refresh
   const [refreshing, setRefreshing] = useState(false);
@@ -51,6 +56,14 @@ export default function Feed() {
             tintColor={"white"}
           />
         }
+        onEndReached={() =>
+          fetchMore({
+            variables: {
+              offset: data?.seeFeed?.length,
+            },
+          })
+        }
+        onEndReachedThreshold={1}
       />
     </ScreenLayout>
   );

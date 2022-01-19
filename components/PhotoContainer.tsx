@@ -14,7 +14,7 @@ import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 
 const Container = styled.View`
-  border: solid 1px green;
+  border: solid 1px;
 `;
 const Header = styled.TouchableOpacity`
   flex-direction: row;
