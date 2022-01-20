@@ -43,7 +43,6 @@ export default function Login({ navigation, route }: any) {
     },
   });
   const onValid = (data: any) => {
-    console.log("onValid");
     if (!loading) {
       LogInMutation({
         variables: {

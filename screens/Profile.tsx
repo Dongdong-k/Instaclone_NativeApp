@@ -9,7 +9,9 @@ const ProfileContainer = styled.View({
   justifyContent: "center",
 });
 
-export default function Profile() {
+export default function Profile({ route }: any) {
+  console.log("Profile");
+  console.log(route);
   return (
     <ProfileContainer>
       <Text style={{ color: "white" }}>Profile</Text>

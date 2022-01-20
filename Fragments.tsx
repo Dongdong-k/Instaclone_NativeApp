@@ -14,11 +14,22 @@ export const COMMENT_FRAGMENT = gql`
   fragment CommentFragment on Comment {
     id
     user {
+      id
       userName
       avatar
     }
     payload
     isMine
     createdAt
+  }
+`;
+
+export const USER_FRAGMENT = gql`
+  fragment UserFragment on User {
+    id
+    userName
+    avatar
+    isMe
+    isFollowing
   }
 `;

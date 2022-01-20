@@ -100,6 +100,7 @@ interface seeFeed_seeFeed {
 
 interface seeFeed_seeFeed_user {
   __typename: "User";
+  id: number;
   userName: string;
   avatar: string | undefined;
 }
@@ -114,13 +115,21 @@ interface seeFeed_seeFeed_comments {
 }
 
 type RootStackParamList = {
-  Profile: undefined;
-  Likes: undefined;
+  Profile: {
+    userName?: string;
+    id?: number;
+  };
+  Likes: {
+    photoId: number;
+  };
   Comments: undefined;
   Photo: undefined;
 };
 
-type ProfileScreenProp = StackNavigationProp<RootStackParamList, "Profile">;
+export type ProfileScreenProp = StackNavigationProp<
+  RootStackParamList,
+  "Profile"
+>;
 
 export default function PhotoContainer({
   id,
@@ -180,6 +189,7 @@ export default function PhotoContainer({
       });
     }
   };
+
   const [toggleLikeMutation] = useMutation(TOGGLE_LIKGE_MUTATION, {
     variables: {
       id,
@@ -187,9 +197,13 @@ export default function PhotoContainer({
     update: updateToggleLike,
   });
 
+  const goToProfile = () => {
+    navigation.navigate("Profile", { id: user.id, userName: user.userName });
+  };
+
   return (
     <Container>
-      <Header onPress={() => navigation.navigate("Profile")}>
+      <Header onPress={goToProfile}>
         {user.avatar ? (
           <UserAvatar source={{ uri: user?.avatar }} resizeMode="cover" />
         ) : (
@@ -218,11 +232,13 @@ export default function PhotoContainer({
             <Ionicons name="chatbubble-outline" color={"white"} size={22} />
           </Action>
         </Actions>
-        <TouchableOpacity onPress={() => navigation.navigate("Likes")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Likes", { photoId: id })}
+        >
           <Likes>{likes === 1 ? "1 like" : `${likes} likes`}</Likes>
         </TouchableOpacity>
         <Caption>
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+          <TouchableOpacity onPress={goToProfile}>
             <UserName>{user?.userName}</UserName>
           </TouchableOpacity>
           <CaptionText>{caption}</CaptionText>
