@@ -40,18 +40,20 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+export const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        seeFeed: offsetLimitPagination(),
+      },
+    },
+  },
+});
+
 const client = new ApolloClient({
   link: authLink.concat(httpLink),
   //   uri: "https://localhost:4000/graphql",
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          seeFeed: offsetLimitPagination(),
-        },
-      },
-    },
-  }),
+  cache,
 });
 
 export default client;

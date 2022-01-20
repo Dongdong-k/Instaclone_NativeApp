@@ -37,6 +37,12 @@ export default function Feed() {
   // Pull to Refresh
   const [refreshing, setRefreshing] = useState(false);
 
+  const refresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+
   const renderPhoto = ({ item: photo }: any) => {
     return <PhotoContainer {...photo} />;
   };
@@ -52,7 +58,7 @@ export default function Feed() {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={refetch}
+            onRefresh={refresh}
             tintColor={"white"}
           />
         }

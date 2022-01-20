@@ -1,9 +1,7 @@
-import AppLoading from "expo-app-loading";
 import { StatusBar } from "expo-status-bar";
 import React, { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
@@ -13,6 +11,12 @@ import { ApolloProvider, useReactiveVar } from "@apollo/client";
 import client, { isLoggedInVar, tokenVar } from "./ApolloClient";
 import LoggedInNav from "./navigators/LoggedInNav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  AsyncStorageWrapper,
+  LocalStorageWrapper,
+  persistCache,
+} from "apollo3-cache-persist";
+import { cache } from "./ApolloClient";
 
 export default function App() {
   // method 2 - SplashScreen
@@ -32,6 +36,17 @@ export default function App() {
         await SplashScreen.preventAutoHideAsync(); // hideAsync 실행되기 전까지 스플래시 스크린 띄우기
         await Font.loadAsync(Ionicons.font); // 폰트 로딩하기
         await Asset.loadAsync([require("./assets/logo.png")]); // 이미지 로딩하기
+        if (Platform.OS == "web") {
+          await persistCache({
+            cache,
+            storage: new LocalStorageWrapper(window.localStorage),
+          });
+        } else {
+          await persistCache({
+            cache,
+            storage: new AsyncStorageWrapper(AsyncStorage),
+          });
+        }
       } catch (e) {
         console.warn(e);
       } finally {
