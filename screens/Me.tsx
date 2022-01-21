@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 import { logUserOut } from "../ApolloClient";
+import useMe from "../hooks/useMe";
 
 const MeContainer = styled.View({
   flex: 1,
@@ -10,7 +11,15 @@ const MeContainer = styled.View({
   justifyContent: "center",
 });
 
-export default function Me() {
+export default function Me({ navigation }: any) {
+  const { data } = useMe();
+  useEffect(() => {
+    if (data?.me?.userName) {
+      navigation.setOptions({
+        title: `${data?.me?.userName}`,
+      });
+    }
+  }, []);
   return (
     <MeContainer>
       <TouchableOpacity onPress={() => logUserOut()}>
