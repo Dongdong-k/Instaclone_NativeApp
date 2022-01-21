@@ -2,11 +2,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { setStatusBarBackgroundColor } from "expo-status-bar";
 import React from "react";
 import TabIcon from "../components/nav/TabIcon";
+import { Image } from "react-native";
+import useMe from "../hooks/useMe";
 import StackNavFactory from "./StackNavFactory";
 
 const Tabs = createBottomTabNavigator();
 
 export default function LoggedInNav() {
+  const { data } = useMe();
   return (
     <Tabs.Navigator
       initialRouteName="FeedTabs"
@@ -63,9 +66,20 @@ export default function LoggedInNav() {
       <Tabs.Screen
         name="MeTabs"
         options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon focused={focused} color={color} iconName={"person"} />
-          ),
+          tabBarIcon: ({ focused, color, size }) =>
+            data?.me?.avatar ? (
+              <Image
+                style={{
+                  width: 25,
+                  height: 25,
+                  borderRadius: 12.5,
+                  ...(focused && { borderColor: "white", borderWidth: 2 }),
+                }}
+                source={{ uri: data.me.avatar }}
+              />
+            ) : (
+              <TabIcon focused={focused} color={color} iconName={"person"} />
+            ),
         }}
       >
         {() => <StackNavFactory screenName="Me" />}
