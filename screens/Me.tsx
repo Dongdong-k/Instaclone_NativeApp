@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { AsyncStorage, Text, TouchableOpacity, View } from "react-native";
 import styled from "styled-components/native";
 import { logUserOut } from "../ApolloClient";
 import useMe from "../hooks/useMe";

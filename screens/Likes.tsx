@@ -34,7 +34,7 @@ export default function Likes({ route }: any) {
     await refetch();
     setRefreshing(false);
   };
-
+  console.log("likes query data", data);
   return (
     <ScreenLayout loading={loading}>
       <FlatList

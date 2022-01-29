@@ -1,8 +1,13 @@
-import { defaultDataIdFromObject, gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery } from "@apollo/client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import {
+  ActivityIndicator,
+  FlatList,
+  TouchableOpacity,
+  useWindowDimensions,
+  Image,
+} from "react-native";
 import styled from "styled-components/native";
 import DismissKeyboard from "../components/DismissKeyboard";
 
@@ -22,7 +27,13 @@ const SearchContainer = styled.View({
   justifyContent: "center",
 });
 
-const SearchInput = styled.TextInput``;
+const SearchInput = styled.TextInput<SearchInputInterface>`
+  background-color: rgba(255, 255, 255, 0.7);
+  width: ${(props) => props.width / 1.5}px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+`;
 
 const MessageContainer = styled.View``;
 const MessageText = styled.Text`
@@ -31,13 +42,15 @@ const MessageText = styled.Text`
   margin-top: 10px;
 `;
 
+interface SearchInputInterface {
+  width: number; // TextInput props 추가
+}
+
 export default function Search({ navigation }: any) {
-  // useForm
-  const { setValue, register, watch, handleSubmit } = useForm();
-  // useLazyQuery : 원하는 경우에만 실행
-  // startQueryFn : 트리거
-  // called :  함수호출 여부 표현(boolean)
-  const [startQueryFn, { loading, data, called }] = useLazyQuery(SEARCH_PHOTOS);
+  const numColumns = 3; // Flatlist columns 수
+  const { width } = useWindowDimensions(); // 화면 width 가져오기
+  const { setValue, register, watch, handleSubmit } = useForm(); // useForm
+  const [startQueryFn, { loading, data, called }] = useLazyQuery(SEARCH_PHOTOS); // useLazyQuery : 원하는 경우에만 실행, startQueryFn : 트리거, called :  함수호출 여부 표현(boolean)
 
   const onValid = ({ keyword }: any) => {
     startQueryFn({
@@ -45,16 +58,10 @@ export default function Search({ navigation }: any) {
         keyword,
       },
     });
-    console.log(data);
   };
   // 헤더 내 검색창 구현사기
   const searchBox = () => (
     <SearchInput
-      style={{
-        backgroundColor: "white",
-        width: "100%",
-        textAlign: "center",
-      }}
       placeholder="Search Photos"
       placeholderTextColor={"black"}
       autoCapitalize="none" // 소문자로 인식
@@ -63,6 +70,7 @@ export default function Search({ navigation }: any) {
       onChangeText={(text) => setValue("keyword", text)}
       autoCorrect={false}
       onSubmitEditing={handleSubmit(onValid)}
+      width={width}
     />
   );
   useEffect(() => {
@@ -71,7 +79,18 @@ export default function Search({ navigation }: any) {
     });
     register("keyword", { required: true, minLength: 2 });
   }, []);
-  console.log(data);
+  const renderItem = ({ item: photo }: any) => {
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Photo", { photoId: photo.id })}
+      >
+        <Image
+          source={{ uri: photo.file }}
+          style={{ width: width / numColumns, height: width / numColumns }}
+        />
+      </TouchableOpacity>
+    );
+  };
   return (
     <DismissKeyboard>
       <SearchContainer>
@@ -86,11 +105,19 @@ export default function Search({ navigation }: any) {
             <MessageText>Search by keyword</MessageText>
           </MessageContainer>
         ) : null}
-        {data?.searchPhotos !== undefined &&
-        data?.searchPhotos?.length === 0 ? (
-          <MessageContainer>
-            <MessageText>Could not find anything</MessageText>
-          </MessageContainer>
+        {data?.searchPhotos !== undefined ? (
+          data?.searchPhotos?.length === 0 ? (
+            <MessageContainer>
+              <MessageText>Could not find anything</MessageText>
+            </MessageContainer>
+          ) : (
+            <FlatList
+              data={data?.searchPhotos}
+              renderItem={renderItem}
+              keyExtractor={(photo) => photo.id}
+              numColumns={numColumns}
+            />
+          )
         ) : null}
       </SearchContainer>
     </DismissKeyboard>
