@@ -3,6 +3,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
   TouchableWithoutFeedback,
 } from "react-native";
 import styled from "styled-components/native";
@@ -25,6 +26,7 @@ const Logo = styled.Image`
 export default function AuthLayout({ children }: any) {
   return (
     <DismissKeyboard>
+      <StatusBar barStyle={"light-content"} hidden={false} />
       <AuthContainer>
         <KeyboardAvoidingView
           behavior="padding"

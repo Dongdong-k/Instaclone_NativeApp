@@ -1,6 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import { FlatList, RefreshControl, StatusBar, Text, View } from "react-native";
 import styled from "styled-components/native";
 import PhotoContainer from "../components/PhotoContainer";
 import ScreenLayout from "../components/ScreenLayout";

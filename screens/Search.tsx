@@ -49,7 +49,7 @@ interface SearchInputInterface {
 export default function Search({ navigation }: any) {
   const numColumns = 3; // Flatlist columns 수
   const { width } = useWindowDimensions(); // 화면 width 가져오기
-  const { setValue, register, watch, handleSubmit } = useForm(); // useForm
+  const { setValue, register, handleSubmit } = useForm(); // useForm
   const [startQueryFn, { loading, data, called }] = useLazyQuery(SEARCH_PHOTOS); // useLazyQuery : 원하는 경우에만 실행, startQueryFn : 트리거, called :  함수호출 여부 표현(boolean)
 
   const onValid = ({ keyword }: any) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, StatusBar } from "react-native";
 import styled from "styled-components/native";
 
 const FeedContainer = styled.View({
@@ -12,6 +12,7 @@ const FeedContainer = styled.View({
 export default function ScreenLayout({ loading, children }: any) {
   return (
     <FeedContainer>
+      <StatusBar barStyle={"light-content"} hidden={false} />
       {loading ? (
         <ActivityIndicator color={"white"} size={"large"} />
       ) : (
