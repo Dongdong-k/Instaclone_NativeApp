@@ -9,10 +9,10 @@ const Container = styled.View({
   justifyContent: "center",
 });
 
-export default function Upload() {
+export default function SelectPhoto() {
   return (
     <Container>
-      <Text style={{ color: "white" }}>Upload</Text>
+      <Text style={{ color: "white" }}>SelectPhoto</Text>
     </Container>
   );
 }

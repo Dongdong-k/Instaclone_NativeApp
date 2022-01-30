@@ -9,7 +9,7 @@ import Notification from "../screens/Notification";
 import Photo from "../screens/Photo";
 import Profile from "../screens/Profile";
 import Search from "../screens/Search";
-import Upload from "../screens/Upload";
+import SelectPhoto from "../screens/SelectPhoto";
 
 const Stack = createStackNavigator();
 
@@ -56,7 +56,7 @@ export default function StackNavFactory({ screenName }: any) {
       ) : null}
       {screenName === "Me" ? <Stack.Screen name="Me" component={Me} /> : null}
       {screenName === "Upload" ? (
-        <Stack.Screen name="Upload" component={Upload} />
+        <Stack.Screen name="Upload" component={SelectPhoto} />
       ) : null}
       <Stack.Screen name="Profile" component={Profile} />
       <Stack.Screen name="Photo" component={Photo} />
