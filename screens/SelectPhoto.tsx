@@ -30,7 +30,14 @@ const IconContainer = styled.View`
 `;
 const numColumns = 4;
 
-export default function SelectPhoto() {
+const HeaderRightText = styled.Text`
+  color: ${color.blue};
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 5px;
+`;
+
+export default function SelectPhoto({ navigation }: any) {
   const { width } = useWindowDimensions(); // 화면 width 가져오기
   const [ok, setOk] = useState(false); // 권한 확인 및 요청 결과 확인하기
   const [photos, setPhotos] = useState<any>([]); // 사진 데이터 받아오기
@@ -38,8 +45,7 @@ export default function SelectPhoto() {
   const getalbums = async () => {
     // 사진 가져오기
     const { assets: photos } = await MediaLibrary.getAssetsAsync();
-    setPhotos(photos);
-    // setChosenPhoto(photos[0]?.uri); // 사진 가져올 경우 디폴트 값 설정 : 첫번째 항목 데이터 선택
+    setPhotos(photos); // 가져온 데이터 저장하기
   };
   const getPermissions = async () => {
     // 권한 확인 및 요청하기
@@ -60,13 +66,23 @@ export default function SelectPhoto() {
       getalbums();
     }
   };
+  const HeaderRight = () => {
+    return (
+      <TouchableOpacity>
+        <HeaderRightText>Next</HeaderRightText>
+      </TouchableOpacity>
+    );
+  };
   // [] 로 입력시 한번만 실행 뜻함
   useEffect(() => {
     getPermissions();
+    navigation.setOptions({
+      headerRight: HeaderRight,
+    });
   }, [ok]);
 
   const choosePhoto = (uri: any) => {
-    setChosenPhoto(uri);
+    setChosenPhoto(uri); // 선택한 사진 uri 정보 저장하기
   };
 
   const renderItem = ({ item: photo }: any) => {
@@ -77,7 +93,11 @@ export default function SelectPhoto() {
           style={{ width: width / numColumns, height: width / numColumns }}
         />
         <IconContainer>
-          <Ionicons name="checkmark-circle-outline" size={18} color={"white"} />
+          <Ionicons
+            name="checkmark-circle-outline"
+            size={18}
+            color={photo.uri === chosenPhoto ? color.blue : "white"} // 이미지 uri 와 선택한 사진의 uri 동일하면 색상변경
+          />
         </IconContainer>
       </ImageContainer>
     );

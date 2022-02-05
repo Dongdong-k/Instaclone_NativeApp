@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StatusBar,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, StatusBar } from "react-native";
 import styled from "styled-components/native";
 import DismissKeyboard from "../DismissKeyboard";
 
