@@ -31,12 +31,17 @@ const SliderContainer = styled.View`
   bottom: 20px;
 `;
 
+const CameraContainer = styled.View`
+  flex: 1;
+  background-color: black;
+`;
+
 export default function TakePhoto({ navigation }: any) {
   // 카메라 권한 반환하기
   const [ok, setOk] = useState(false);
 
   // zoom 값 반환하기
-  const [zoom, setZoom] = useState(0);
+  const [zoom, setZoom] = useState(0.5);
 
   // 카메라 전/후방 선택하기
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back); // 카메라 전면/후면 설정
@@ -51,6 +56,8 @@ export default function TakePhoto({ navigation }: any) {
     const { granted } = await Camera.getCameraPermissionsAsync();
     setOk(granted); // 설정값 반환
   };
+
+  // 최초 1회만 실행
   useEffect(() => {
     getPermissions();
   }, []);
@@ -78,11 +85,12 @@ export default function TakePhoto({ navigation }: any) {
     }
   };
 
+  // 가눙 : 슬라이더 위치 변경시 값을 카메라 zoom에 연결하기
   const onZoomValueChange = (data: any) => {
     setZoom(data);
-    console.log(data);
   };
 
+  /*
   // 슬라이더 컴포넌트
   const SliderPart = () => {
     return (
@@ -100,14 +108,21 @@ export default function TakePhoto({ navigation }: any) {
   // 카메라 컴포넌트
   const CameraScreen = () => {
     return (
-      <>
+      <CameraContainer>
         <Camera
           type={cameraType}
           style={{ flex: 1, alignItems: "center" }}
           zoom={zoom}
         >
           <SliderContainer>
-            <SliderPart />
+            <Slider
+              style={{ width: 200, height: 40 }}
+              minimumValue={0}
+              maximumValue={1}
+              minimumTrackTintColor="#FFFFFF"
+              maximumTrackTintColor="#000000"
+              onValueChange={onZoomValueChange}
+            />
           </SliderContainer>
         </Camera>
         <Actions>
@@ -134,13 +149,61 @@ export default function TakePhoto({ navigation }: any) {
             />
           </TouchableOpacity>
         </Actions>
-      </>
+      </CameraContainer>
     );
   };
+  */
 
   return (
     <Container>
-      {ok === false ? <RequestPermissionScreen /> : <CameraScreen />}
+      {ok === false ? (
+        <RequestPermissionScreen />
+      ) : (
+        <CameraContainer>
+          <Camera
+            type={cameraType}
+            style={{ flex: 1, alignItems: "center" }}
+            zoom={zoom}
+            ratio="4:3"
+          >
+            <SliderContainer>
+              <Slider
+                style={{ width: 200, height: 40 }}
+                value={zoom}
+                minimumValue={0}
+                maximumValue={1}
+                minimumTrackTintColor="#FFFFFF"
+                maximumTrackTintColor="rgb(255,255,255,0.5)"
+                onValueChange={onZoomValueChange}
+              />
+            </SliderContainer>
+          </Camera>
+          <Actions>
+            <View style={{ flex: 1 }} />
+            <TakePhotoBtn />
+            <TouchableOpacity
+              onPress={onCameraSwitch}
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons
+                name={
+                  cameraType === Camera.Constants.Type.front
+                    ? "camera-reverse-outline"
+                    : "camera"
+                }
+                size={28}
+                style={{
+                  color: "rgba(255, 255, 255, 0.8)",
+                }}
+              />
+            </TouchableOpacity>
+          </Actions>
+        </CameraContainer>
+      )}
     </Container>
   );
 }
