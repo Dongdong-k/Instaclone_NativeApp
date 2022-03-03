@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   FlatList,
   Image,
+  StatusBar,
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
@@ -104,6 +105,7 @@ export default function SelectPhoto({ navigation }: any) {
   };
   return (
     <Container>
+      <StatusBar hidden={true} />
       <Top>
         {chosenPhoto !== "" ? (
           <Image

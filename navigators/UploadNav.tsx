@@ -12,6 +12,7 @@ export default function UploadNav() {
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
+      initialRouteName="Select"
       screenOptions={{
         tabBarStyle: { backgroundColor: "black" },
         tabBarActiveTintColor: "white",

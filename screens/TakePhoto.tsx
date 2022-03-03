@@ -1,10 +1,17 @@
 import { Camera } from "expo-camera";
-import React, { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import styled from "styled-components/native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Platform,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import styled, { css } from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
 import { useTheme } from "styled-components";
+import { useIsFocused } from "@react-navigation/native";
 
 const Container = styled.View`
   flex: 1;
@@ -27,8 +34,10 @@ const TakePhotoBtn = styled.TouchableOpacity`
 `;
 
 const SliderContainer = styled.View`
-  position: absolute;
   bottom: 20px;
+  position: absolute;
+  width: 100%;
+  align-items: center;
 `;
 
 const CameraContainer = styled.View`
@@ -36,15 +45,32 @@ const CameraContainer = styled.View`
   background-color: black;
 `;
 
+const CloseButton = styled.TouchableOpacity`
+  ${Platform.select({
+    ios: css``,
+    android: css`
+      position: absolute;
+      top: 10px;
+      left: 3px;
+    `,
+  })}
+`;
+
 export default function TakePhoto({ navigation }: any) {
   // 카메라 권한 반환하기
   const [ok, setOk] = useState(false);
-
   // zoom 값 반환하기
   const [zoom, setZoom] = useState(0.5);
-
   // 카메라 전/후방 선택하기
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back); // 카메라 전면/후면 설정
+  // 카메라 Flash 설정
+  const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off);
+  // 카메라 촬영 전 준비 확인
+  const [cameraReady, setCameraReady] = useState(false);
+  // 카메라 검정화면 개선안 : 화면 focus 시에 카메라 렌더링
+  const isFocused = useIsFocused();
+  // 카메라 촬영을 위한 ref 생성
+  const camera = useRef<Camera>(null);
 
   // 카메라 권한 신청하기
   const requestPermission = async () => {
@@ -59,6 +85,7 @@ export default function TakePhoto({ navigation }: any) {
 
   // 최초 1회만 실행
   useEffect(() => {
+    // 권한 정보 가져오기
     getPermissions();
   }, []);
 
@@ -153,6 +180,34 @@ export default function TakePhoto({ navigation }: any) {
     );
   };
   */
+  // FlashMode 함수
+  const onFlashChange = () => {
+    if (flashMode === Camera.Constants.FlashMode.off) {
+      // off -> on
+      setFlashMode(Camera.Constants.FlashMode.on);
+    } else if (flashMode === Camera.Constants.FlashMode.on) {
+      // on -> auto
+      setFlashMode(Camera.Constants.FlashMode.auto);
+    } else if (flashMode === Camera.Constants.FlashMode.auto) {
+      // auto -> off
+      setFlashMode(Camera.Constants.FlashMode.off);
+    }
+  };
+
+  // 카메라 준비시 상태 변경
+  const onCameraReady = () => setCameraReady(true);
+
+  // 카메라 촬영 함수
+  const takePhoto = async () => {
+    if (camera.current && cameraReady) {
+      // console.log("camera.current : ", camera.current);
+      const photo = await camera.current.takePictureAsync({
+        quality: 1,
+        exif: true,
+      });
+      console.log("take a photo result : ", photo);
+    }
+  };
 
   return (
     <Container>
@@ -160,27 +215,60 @@ export default function TakePhoto({ navigation }: any) {
         <RequestPermissionScreen />
       ) : (
         <CameraContainer>
-          <Camera
-            type={cameraType}
-            style={{ flex: 1, alignItems: "center" }}
-            zoom={zoom}
-            ratio="4:3"
-          >
-            <SliderContainer>
-              <Slider
-                style={{ width: 200, height: 40 }}
-                value={zoom}
-                minimumValue={0}
-                maximumValue={1}
-                minimumTrackTintColor="#FFFFFF"
-                maximumTrackTintColor="rgb(255,255,255,0.5)"
-                onValueChange={onZoomValueChange}
-              />
-            </SliderContainer>
-          </Camera>
+          <StatusBar hidden={true} />
+          {isFocused ? (
+            <Camera
+              type={cameraType}
+              style={{ flex: 1 }}
+              zoom={zoom}
+              flashMode={flashMode}
+              ref={camera}
+              onCameraReady={onCameraReady}
+            >
+              <CloseButton onPress={() => navigation.navigate("Tabs")}>
+                <Ionicons name="close" color={"white"} size={30} />
+              </CloseButton>
+              <SliderContainer>
+                <Slider
+                  style={{ width: 300, height: 40 }}
+                  value={zoom}
+                  minimumValue={0}
+                  maximumValue={1}
+                  minimumTrackTintColor="#FFFFFF"
+                  maximumTrackTintColor="rgb(255,255,255,0.5)"
+                  onValueChange={onZoomValueChange}
+                />
+              </SliderContainer>
+            </Camera>
+          ) : (
+            <Container />
+          )}
           <Actions>
-            <View style={{ flex: 1 }} />
-            <TakePhotoBtn />
+            <TouchableOpacity
+              onPress={onFlashChange}
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons
+                name={
+                  flashMode === Camera.Constants.FlashMode.off
+                    ? "flash-off"
+                    : flashMode === Camera.Constants.FlashMode.on
+                    ? "flash"
+                    : flashMode === Camera.Constants.FlashMode.auto
+                    ? "eye"
+                    : undefined
+                }
+                size={28}
+                style={{
+                  color: "rgba(255, 255, 255, 0.8)",
+                }}
+              />
+            </TouchableOpacity>
+            <TakePhotoBtn onPress={takePhoto} />
             <TouchableOpacity
               onPress={onCameraSwitch}
               style={{
