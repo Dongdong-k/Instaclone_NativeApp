@@ -43,9 +43,21 @@ export default function SelectPhoto({ navigation }: any) {
   const [ok, setOk] = useState(false); // 권한 확인 및 요청 결과 확인하기
   const [photos, setPhotos] = useState<any>([]); // 사진 데이터 받아오기
   const [chosenPhoto, setChosenPhoto] = useState(""); // 선택한 사진 정보 가져오기
+  const [photoNumbers, setPhotoNumber] = useState(20); // 사진 추가로딩 정보 설정
+
+  // Flatlist 하단 도달시 사진 추가 로딩하기
+  const getPhotos = async () => {
+    setPhotoNumber(photoNumbers + 20);
+    getalbums();
+  };
+
   const getalbums = async () => {
     // 사진 가져오기
-    const { assets: photos } = await MediaLibrary.getAssetsAsync();
+    const { assets: photos } = await MediaLibrary.getAssetsAsync({
+      // 최근 촬영일자로 정렬
+      sortBy: MediaLibrary.SortBy.creationTime,
+      first: photoNumbers,
+    });
     setPhotos(photos); // 가져온 데이터 저장하기
   };
   const getPermissions = async () => {
@@ -120,6 +132,8 @@ export default function SelectPhoto({ navigation }: any) {
           keyExtractor={(photo) => photo.id}
           renderItem={renderItem}
           numColumns={numColumns}
+          onEndReached={() => getPhotos()}
+          onEndReachedThreshold={0.3}
         />
       </Bottom>
     </Container>

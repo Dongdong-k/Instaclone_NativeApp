@@ -1,6 +1,7 @@
 import { Camera } from "expo-camera";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Image,
   Platform,
   StatusBar,
   Text,
@@ -10,8 +11,10 @@ import {
 import styled, { css } from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import Slider from "@react-native-community/slider";
-import { useTheme } from "styled-components";
+import * as MediaLibrary from "expo-media-library";
 import { useIsFocused } from "@react-navigation/native";
+import { CameraType } from "expo-camera/build/Camera.types";
+import { FlipType, manipulateAsync } from "expo-image-manipulator";
 
 const Container = styled.View`
   flex: 1;
@@ -56,6 +59,27 @@ const CloseButton = styled.TouchableOpacity`
   })}
 `;
 
+const FlashContainer = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CameraTypeContainer = styled.TouchableOpacity`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+const PhotoBtnContainer = styled.TouchableOpacity`
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 2px;
+`;
+const PhotoBtnText = styled.Text`
+  font-weight: 600;
+`;
+
 export default function TakePhoto({ navigation }: any) {
   // 카메라 권한 반환하기
   const [ok, setOk] = useState(false);
@@ -71,6 +95,8 @@ export default function TakePhoto({ navigation }: any) {
   const isFocused = useIsFocused();
   // 카메라 촬영을 위한 ref 생성
   const camera = useRef<Camera>(null);
+  // 카메라 촬영여부 확인 : 촬영 사진 확인 및 업로드 용도
+  const [takenPhoto, setTakenPhoto] = useState("");
 
   // 카메라 권한 신청하기
   const requestPermission = async () => {
@@ -205,9 +231,39 @@ export default function TakePhoto({ navigation }: any) {
         quality: 1,
         exif: true,
       });
-      console.log("take a photo result : ", photo);
+
+      //********************************************
+      // 사진 출력 설정
+      // 갤럭시 : 전면/후면 카메라 촬영시 회전 및 좌우 반전 발생
+      // iOS : 별도 설정 필요 없음
+      //********************************************
+      if (Platform.OS === "android") {
+        if (cameraType === Camera.Constants.Type.front) {
+          console.log("사진 좌우 반전 for 전면 카메라");
+          const maniPhoto = await manipulateAsync(photo.uri, [
+            { flip: FlipType.Vertical },
+            { rotate: 90 },
+          ]);
+          setTakenPhoto(maniPhoto.uri);
+        } else {
+          const maniPhoto = await manipulateAsync(photo.uri, [{ rotate: 270 }]);
+          setTakenPhoto(maniPhoto.uri);
+        }
+      } else if (Platform.OS === "ios") {
+        setTakenPhoto(photo.uri);
+      }
+
+      console.log(photo);
+      // 촬영 데이터 저장하기 & 객체 반환
+      // const asset = await MediaLibrary.createAssetAsync(photo.uri);
+      // console.log("asset : ", asset);
+
+      // 촬영 데이터 저장하기 & 객체 미반환
+      // await MediaLibrary.saveToLibraryAsync(photo.uri);
     }
   };
+
+  const onDismiss = () => setTakenPhoto("");
 
   return (
     <Container>
@@ -217,79 +273,84 @@ export default function TakePhoto({ navigation }: any) {
         <CameraContainer>
           <StatusBar hidden={true} />
           {isFocused ? (
-            <Camera
-              type={cameraType}
-              style={{ flex: 1 }}
-              zoom={zoom}
-              flashMode={flashMode}
-              ref={camera}
-              onCameraReady={onCameraReady}
-            >
-              <CloseButton onPress={() => navigation.navigate("Tabs")}>
-                <Ionicons name="close" color={"white"} size={30} />
-              </CloseButton>
-              <SliderContainer>
-                <Slider
-                  style={{ width: 300, height: 40 }}
-                  value={zoom}
-                  minimumValue={0}
-                  maximumValue={1}
-                  minimumTrackTintColor="#FFFFFF"
-                  maximumTrackTintColor="rgb(255,255,255,0.5)"
-                  onValueChange={onZoomValueChange}
-                />
-              </SliderContainer>
-            </Camera>
+            takenPhoto === "" ? (
+              <Camera
+                type={cameraType}
+                style={{ flex: 1 }}
+                zoom={zoom}
+                flashMode={flashMode}
+                ref={camera}
+                onCameraReady={onCameraReady}
+                autoFocus={"on"}
+              >
+                <CloseButton onPress={() => navigation.navigate("Tabs")}>
+                  <Ionicons name="close" color={"white"} size={30} />
+                </CloseButton>
+                <SliderContainer>
+                  <Slider
+                    style={{ width: 300, height: 40 }}
+                    value={zoom}
+                    minimumValue={0}
+                    maximumValue={1}
+                    minimumTrackTintColor="#FFFFFF"
+                    maximumTrackTintColor="rgb(255,255,255,0.5)"
+                    onValueChange={onZoomValueChange}
+                  />
+                </SliderContainer>
+              </Camera>
+            ) : (
+              <Image source={{ uri: takenPhoto }} style={{ flex: 1 }} />
+            )
           ) : (
             <Container />
           )}
-          <Actions>
-            <TouchableOpacity
-              onPress={onFlashChange}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Ionicons
-                name={
-                  flashMode === Camera.Constants.FlashMode.off
-                    ? "flash-off"
-                    : flashMode === Camera.Constants.FlashMode.on
-                    ? "flash"
-                    : flashMode === Camera.Constants.FlashMode.auto
-                    ? "eye"
-                    : undefined
-                }
-                size={28}
-                style={{
-                  color: "rgba(255, 255, 255, 0.8)",
-                }}
-              />
-            </TouchableOpacity>
-            <TakePhotoBtn onPress={takePhoto} />
-            <TouchableOpacity
-              onPress={onCameraSwitch}
-              style={{
-                flex: 1,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Ionicons
-                name={
-                  cameraType === Camera.Constants.Type.front
-                    ? "camera-reverse-outline"
-                    : "camera"
-                }
-                size={28}
-                style={{
-                  color: "rgba(255, 255, 255, 0.8)",
-                }}
-              />
-            </TouchableOpacity>
-          </Actions>
+          {takenPhoto === "" ? (
+            <Actions>
+              <FlashContainer onPress={onFlashChange}>
+                <Ionicons
+                  name={
+                    flashMode === Camera.Constants.FlashMode.off
+                      ? "flash-off"
+                      : flashMode === Camera.Constants.FlashMode.on
+                      ? "flash"
+                      : flashMode === Camera.Constants.FlashMode.auto
+                      ? "eye"
+                      : undefined
+                  }
+                  size={28}
+                  style={{
+                    color: "rgba(255, 255, 255, 0.8)",
+                  }}
+                />
+              </FlashContainer>
+              <TakePhotoBtn onPress={takePhoto} />
+              <CameraTypeContainer onPress={onCameraSwitch}>
+                <Ionicons
+                  name={
+                    cameraType === Camera.Constants.Type.front
+                      ? "camera-reverse-outline"
+                      : "camera"
+                  }
+                  size={28}
+                  style={{
+                    color: "rgba(255, 255, 255, 0.8)",
+                  }}
+                />
+              </CameraTypeContainer>
+            </Actions>
+          ) : (
+            <Actions style={{ paddingLeft: 30, paddingRight: 30 }}>
+              <PhotoBtnContainer onPress={onDismiss}>
+                <PhotoBtnText>Dismiss</PhotoBtnText>
+              </PhotoBtnContainer>
+              <PhotoBtnContainer>
+                <PhotoBtnText>Upload</PhotoBtnText>
+              </PhotoBtnContainer>
+              <PhotoBtnContainer>
+                <PhotoBtnText>Save & Upload</PhotoBtnText>
+              </PhotoBtnContainer>
+            </Actions>
+          )}
         </CameraContainer>
       )}
     </Container>
