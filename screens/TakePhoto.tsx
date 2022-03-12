@@ -1,6 +1,7 @@
 import { Camera } from "expo-camera";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Image,
   Platform,
   StatusBar,
@@ -257,13 +258,32 @@ export default function TakePhoto({ navigation }: any) {
       // 촬영 데이터 저장하기 & 객체 반환
       // const asset = await MediaLibrary.createAssetAsync(photo.uri);
       // console.log("asset : ", asset);
-
-      // 촬영 데이터 저장하기 & 객체 미반환
-      // await MediaLibrary.saveToLibraryAsync(photo.uri);
     }
   };
-
+  const goToUpload = async (save: boolean) => {
+    if (save) {
+      // 촬영 데이터 저장하기 & 객체 미반환
+      await MediaLibrary.saveToLibraryAsync(takenPhoto);
+    } else {
+    }
+  };
   const onDismiss = () => setTakenPhoto("");
+  const onUpload = () => {
+    Alert.alert(
+      "Save Photo",
+      "(1) Save & Upload Photo or (2) Just Upload Photo",
+      [
+        {
+          text: "Save & Upload",
+          onPress: () => goToUpload(true),
+        },
+        {
+          text: "Upload",
+          onPress: () => goToUpload(false),
+        },
+      ]
+    );
+  };
 
   return (
     <Container>
@@ -339,15 +359,12 @@ export default function TakePhoto({ navigation }: any) {
               </CameraTypeContainer>
             </Actions>
           ) : (
-            <Actions style={{ paddingLeft: 30, paddingRight: 30 }}>
+            <Actions style={{ justifyContent: "space-around" }}>
               <PhotoBtnContainer onPress={onDismiss}>
                 <PhotoBtnText>Dismiss</PhotoBtnText>
               </PhotoBtnContainer>
-              <PhotoBtnContainer>
+              <PhotoBtnContainer onPress={onUpload}>
                 <PhotoBtnText>Upload</PhotoBtnText>
-              </PhotoBtnContainer>
-              <PhotoBtnContainer>
-                <PhotoBtnText>Save & Upload</PhotoBtnText>
               </PhotoBtnContainer>
             </Actions>
           )}
