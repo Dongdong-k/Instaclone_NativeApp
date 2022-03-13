@@ -47,8 +47,10 @@ export default function SelectPhoto({ navigation }: any) {
 
   // Flatlist 하단 도달시 사진 추가 로딩하기
   const getPhotos = async () => {
+    console.log("load photos");
+    console.log("photoNumbers 전 : ", photoNumbers);
     setPhotoNumber(photoNumbers + 20);
-    getalbums();
+    console.log("photoNumbers 후 : ", photoNumbers);
   };
 
   const getalbums = async () => {
@@ -59,6 +61,10 @@ export default function SelectPhoto({ navigation }: any) {
       first: photoNumbers,
     });
     setPhotos(photos); // 가져온 데이터 저장하기
+    // 첫 로딩시에만 첫 사진 선택
+    if (chosenPhoto === "") {
+      setChosenPhoto(photos[0].uri);
+    }
   };
   const getPermissions = async () => {
     // 권한 확인 및 요청하기
@@ -72,6 +78,7 @@ export default function SelectPhoto({ navigation }: any) {
         // 권한 요청 후 수락한 경우
         setOk(true);
         getalbums();
+        setChosenPhoto(photos[0].uri); // 첫 로딩시에만 첫 사진 선택
       }
     } else if (accessPrivileges !== "none") {
       // 권한 확인시 권한이 있는 경우
@@ -81,7 +88,9 @@ export default function SelectPhoto({ navigation }: any) {
   };
   const HeaderRight = () => {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("UploadForm", { file: chosenPhoto })}
+      >
         <HeaderRightText>Next</HeaderRightText>
       </TouchableOpacity>
     );
@@ -89,13 +98,23 @@ export default function SelectPhoto({ navigation }: any) {
   // [] 로 입력시 한번만 실행 뜻함
   useEffect(() => {
     getPermissions();
+  }, [ok]);
+
+  // 사진 추가 로딩시 앨범로딩
+  useEffect(() => {
+    getalbums();
+  }, [photoNumbers]);
+
+  useEffect(() => {
     navigation.setOptions({
       headerRight: HeaderRight,
     });
-  }, [ok]);
+  }, [chosenPhoto, photoNumbers, photos]);
 
   const choosePhoto = (uri: any) => {
+    // console.log("uri : ", uri);
     setChosenPhoto(uri); // 선택한 사진 uri 정보 저장하기
+    // console.log("사진 선택 완료 : ", chosenPhoto);
   };
 
   const renderItem = ({ item: photo }: any) => {
@@ -117,7 +136,7 @@ export default function SelectPhoto({ navigation }: any) {
   };
   return (
     <Container>
-      <StatusBar hidden={true} />
+      <StatusBar hidden={false} />
       <Top>
         {chosenPhoto !== "" ? (
           <Image
@@ -133,7 +152,7 @@ export default function SelectPhoto({ navigation }: any) {
           renderItem={renderItem}
           numColumns={numColumns}
           onEndReached={() => getPhotos()}
-          onEndReachedThreshold={0.3}
+          onEndReachedThreshold={0.1}
         />
       </Bottom>
     </Container>

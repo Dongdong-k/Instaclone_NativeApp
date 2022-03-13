@@ -85,7 +85,7 @@ export default function TakePhoto({ navigation }: any) {
   // 카메라 권한 반환하기
   const [ok, setOk] = useState(false);
   // zoom 값 반환하기
-  const [zoom, setZoom] = useState(0.5);
+  const [zoom, setZoom] = useState(0);
   // 카메라 전/후방 선택하기
   const [cameraType, setCameraType] = useState(Camera.Constants.Type.back); // 카메라 전면/후면 설정
   // 카메라 Flash 설정
@@ -240,7 +240,6 @@ export default function TakePhoto({ navigation }: any) {
       //********************************************
       if (Platform.OS === "android") {
         if (cameraType === Camera.Constants.Type.front) {
-          console.log("사진 좌우 반전 for 전면 카메라");
           const maniPhoto = await manipulateAsync(photo.uri, [
             { flip: FlipType.Vertical },
             { rotate: 90 },
@@ -254,7 +253,6 @@ export default function TakePhoto({ navigation }: any) {
         setTakenPhoto(photo.uri);
       }
 
-      console.log(photo);
       // 촬영 데이터 저장하기 & 객체 반환
       // const asset = await MediaLibrary.createAssetAsync(photo.uri);
       // console.log("asset : ", asset);
@@ -262,10 +260,13 @@ export default function TakePhoto({ navigation }: any) {
   };
   const goToUpload = async (save: boolean) => {
     if (save) {
+      // Save & Upload 버튼 클릭시
       // 촬영 데이터 저장하기 & 객체 미반환
       await MediaLibrary.saveToLibraryAsync(takenPhoto);
     } else {
+      // Just Upload 버튼 클릭시
     }
+    navigation.navigate("UploadForm", { file: takenPhoto });
   };
   const onDismiss = () => setTakenPhoto("");
   const onUpload = () => {
@@ -291,7 +292,7 @@ export default function TakePhoto({ navigation }: any) {
         <RequestPermissionScreen />
       ) : (
         <CameraContainer>
-          <StatusBar hidden={true} />
+          {isFocused ? <StatusBar hidden={true} /> : null}
           {isFocused ? (
             takenPhoto === "" ? (
               <Camera
