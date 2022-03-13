@@ -10,6 +10,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { color } from "../color";
+import HeaderRight from "../components/auth/HeaderRigth";
 
 const Container = styled.View`
   flex: 1;
@@ -30,13 +31,6 @@ const IconContainer = styled.View`
   right: 1px;
 `;
 const numColumns = 4;
-
-const HeaderRightText = styled.Text`
-  color: ${color.blue};
-  font-size: 16px;
-  font-weight: 600;
-  margin-right: 5px;
-`;
 
 export default function SelectPhoto({ navigation }: any) {
   const { width } = useWindowDimensions(); // 화면 width 가져오기
@@ -86,15 +80,7 @@ export default function SelectPhoto({ navigation }: any) {
       getalbums();
     }
   };
-  const HeaderRight = () => {
-    return (
-      <TouchableOpacity
-        onPress={() => navigation.navigate("UploadForm", { file: chosenPhoto })}
-      >
-        <HeaderRightText>Next</HeaderRightText>
-      </TouchableOpacity>
-    );
-  };
+
   // [] 로 입력시 한번만 실행 뜻함
   useEffect(() => {
     getPermissions();
@@ -107,7 +93,14 @@ export default function SelectPhoto({ navigation }: any) {
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: HeaderRight,
+      headerRight: () => (
+        <HeaderRight
+          navigation={navigation}
+          name={"UploadForm"}
+          data={chosenPhoto}
+          text={"Next"}
+        />
+      ),
     });
   }, [chosenPhoto, photoNumbers, photos]);
 
