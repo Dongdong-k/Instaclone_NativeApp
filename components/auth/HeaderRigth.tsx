@@ -12,20 +12,13 @@ const HeaderRightText = styled.Text`
 `;
 
 interface HeaderRightInterface {
-  navigation: any;
-  name: string;
-  data?: any;
+  onPress: () => void;
   text: string;
 }
 
-export default function HeaderRight({
-  navigation,
-  name,
-  data,
-  text,
-}: HeaderRightInterface) {
+export default function HeaderRight({ onPress, text }: HeaderRightInterface) {
   return (
-    <TouchableOpacity onPress={() => navigation.navigate(name, { file: data })}>
+    <TouchableOpacity onPress={onPress}>
       <HeaderRightText>{text}</HeaderRightText>
     </TouchableOpacity>
   );

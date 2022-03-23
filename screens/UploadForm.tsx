@@ -1,3 +1,5 @@
+import { gql, useMutation } from "@apollo/client";
+import { ReactNativeFile } from "apollo-upload-client";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -11,6 +13,7 @@ import styled from "styled-components/native";
 import { color } from "../color";
 import HeaderRight from "../components/auth/HeaderRigth";
 import DismissKeyboard from "../components/DismissKeyboard";
+import { FEED_PHOTO } from "../Fragments";
 
 const Container = styled.View`
   flex: 1;
@@ -30,8 +33,43 @@ const Caption = styled.TextInput`
   border-radius: 100px;
 `;
 
+const UPLOAD_PHOTO_MUTATION = gql`
+  mutation uploadPhoto($file: Upload!, $caption: String) {
+    uploadPhoto(file: $file, caption: $caption) {
+      ...FeedPhoto
+    }
+  }
+  ${FEED_PHOTO}
+`;
+
 export default function UploadForm({ route, navigation }: any) {
-  console.log(route);
+  // useMutation : cache, result 값을 가지고 있음
+  const updateUploadPhoto = (cache: any, result: any) => {
+    // console.log("cache : ", cache);
+    const {
+      data: { uploadPhoto },
+    } = result;
+
+    if (uploadPhoto.id) {
+      cache.modify({
+        id: `ROOT_QUERY`,
+        fields: {
+          seeFeed(prev: any) {
+            return [uploadPhoto, ...prev];
+          },
+        },
+      });
+    }
+    // 업로드 후 Feed 스크린으로 가기
+    navigation.navigate("Tabs");
+  };
+
+  const [uploadPhotoMutation, { loading }] = useMutation(
+    UPLOAD_PHOTO_MUTATION,
+    {
+      update: updateUploadPhoto,
+    }
+  );
   const { width } = useWindowDimensions(); // 화면 width 가져오기
   const { register, handleSubmit, setValue } = useForm();
 
@@ -50,16 +88,34 @@ export default function UploadForm({ route, navigation }: any) {
   }, [register]);
 
   // 헤더 right 버튼 모니터링
+  // loading 할 때마다 헤더 다시 렌더링 시작
   useEffect(() => {
+    // console.log("loading : ", loading);
     navigation.setOptions({
-      headerRight: () => (
-        <HeaderRight navigation={navigation} name={"Feed"} text={"Next"} />
-      ),
+      headerRight: () =>
+        // loading : true => 로딩표시
+        // loading : false => Next 표시
+        !loading ? (
+          <HeaderRight onPress={handleSubmit(onValid)} text={"Next"} />
+        ) : (
+          <HeaderRightLoading />
+        ),
+      ...(loading && { headerLeft: () => null }),
     });
-  }, [navigation]);
+  }, [loading]);
 
   const onValid = ({ caption }: any) => {
-    console.log(caption);
+    const file = new ReactNativeFile({
+      uri: route.params.file,
+      name: "1.jpg", // 임의로 파일 이름 적용, 아마존 업로드시 파일이름 변경되고 백엔드에서도 별도로 지정 안한상태이기 때문.
+      type: "image/jpeg",
+    });
+    uploadPhotoMutation({
+      variables: {
+        caption,
+        file,
+      },
+    });
   };
   return (
     <DismissKeyboard>

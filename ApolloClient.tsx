@@ -7,6 +7,8 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setContext } from "@apollo/client/link/context";
 import { offsetLimitPagination } from "@apollo/client/utilities";
+import { onError } from "@apollo/client/link/error";
+import { createUploadLink } from "apollo-upload-client";
 
 // 로그인 관련 변수 생성 & false 설정
 export const isLoggedInVar = makeVar(false); // 로그인 여부 확인
@@ -28,7 +30,11 @@ export const logUserOut = async () => {
 };
 
 const httpLink = createHttpLink({
-  uri: "https://84c9-175-113-96-12.ngrok.io/graphql", // 시뮬레이터, 핸드폰 활용시 ngrok 서버 켜고 url 바꾸기
+  uri: "https://91f4-175-113-96-12.ngrok.io/graphql", // 시뮬레이터, 핸드폰 활용시 ngrok 서버 켜고 url 바꾸기
+});
+
+const uploadHttpLink = createUploadLink({
+  uri: "https://91f4-175-113-96-12.ngrok.io/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -38,6 +44,11 @@ const authLink = setContext((_, { headers }) => {
       token: tokenVar(), // 값을 기입하지 않는 경우 현재 값을 가져옴
     },
   };
+});
+
+const onErrorLink = onError(({ graphQLErrors, networkError }) => {
+  console.log("graphQLErrors : ", graphQLErrors);
+  console.log("networkError", networkError);
 });
 
 export const cache = new InMemoryCache({
@@ -51,7 +62,7 @@ export const cache = new InMemoryCache({
 });
 
 const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: authLink.concat(onErrorLink).concat(uploadHttpLink),
   //   uri: "https://localhost:4000/graphql",
   cache,
 });

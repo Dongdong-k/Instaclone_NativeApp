@@ -36,6 +36,8 @@ export default function App() {
         await SplashScreen.preventAutoHideAsync(); // hideAsync 실행되기 전까지 스플래시 스크린 띄우기
         await Font.loadAsync(Ionicons.font); // 폰트 로딩하기
         await Asset.loadAsync([require("./assets/logo.png")]); // 이미지 로딩하기
+
+        // 생선한 cache, storage 유지시키기
         if (Platform.OS == "web") {
           await persistCache({
             cache,
@@ -54,6 +56,7 @@ export default function App() {
         setAppIsReady(true); // appIsReady : false -> true
       }
     }
+
     prepare();
   }, []);
 
@@ -78,7 +81,6 @@ export default function App() {
   return (
     <ApolloProvider client={client}>
       <NavigationContainer onReady={onLayoutRootView}>
-        <StatusBar backgroundColor="black" translucent={true} />
         {isLoggedIn ? <LoggedInNav /> : <LoggedOutNav />}
       </NavigationContainer>
     </ApolloProvider>

@@ -95,9 +95,9 @@ export default function SelectPhoto({ navigation }: any) {
     navigation.setOptions({
       headerRight: () => (
         <HeaderRight
-          navigation={navigation}
-          name={"UploadForm"}
-          data={chosenPhoto}
+          onPress={() =>
+            navigation.navigate("UploadForm", { file: chosenPhoto })
+          }
           text={"Next"}
         />
       ),

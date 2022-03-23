@@ -31,6 +31,7 @@ export default function LoggedInNav() {
           headerBackImage: ({ tintColor }) => (
             <Ionicons color={tintColor} name="close" size={28} />
           ),
+          headerTitleAlign: "center",
           headerStyle: {
             backgroundColor: "black",
           },
