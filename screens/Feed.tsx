@@ -1,10 +1,18 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
-import { FlatList, RefreshControl, StatusBar, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  RefreshControl,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import styled from "styled-components/native";
 import PhotoContainer from "../components/PhotoContainer";
 import ScreenLayout from "../components/ScreenLayout";
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../Fragments";
+import { Ionicons } from "@expo/vector-icons";
 
 const FEED_QUERY = gql`
   query seeFeed($offset: Int!) {
@@ -27,7 +35,7 @@ const FEED_QUERY = gql`
   ${COMMENT_FRAGMENT}
 `;
 
-export default function Feed() {
+export default function Feed({ navigation }: any) {
   // refetch to refresh Feed
   const { data, loading, refetch, fetchMore } = useQuery(FEED_QUERY, {
     variables: {
@@ -47,6 +55,23 @@ export default function Feed() {
   const renderPhoto = ({ item: photo }: any) => {
     return <PhotoContainer {...photo} />;
   };
+
+  // 헤더 우측 메신저 아이콘 클릭시 이벤트 : 메시지함으로 이동
+  const MessagesButton = () => (
+    <TouchableOpacity
+      style={{ marginRight: 15 }}
+      onPress={() => navigation.navigate("Messages")}
+    >
+      <Ionicons name="paper-plane" color="white" size={24} />
+    </TouchableOpacity>
+  );
+
+  // 헤더 우측 메신저 아이콘 생성
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: MessagesButton,
+    });
+  }, []);
 
   return (
     <ScreenLayout loading={loading}>

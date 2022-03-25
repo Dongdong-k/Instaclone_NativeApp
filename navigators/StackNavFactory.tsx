@@ -39,7 +39,7 @@ export default function StackNavFactory({ screenName }: any) {
               <Image
                 style={{
                   maxHeight: 40,
-                  maxWidth: "100%",
+                  maxWidth: 120,
                 }}
                 resizeMode="contain"
                 source={require("../assets/logo1.png")}
