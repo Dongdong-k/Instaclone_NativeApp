@@ -124,6 +124,10 @@ type RootStackParamList = {
   };
   Comments: undefined;
   Photo: undefined;
+  Room: {
+    id?: string | number;
+    talkingTo?: object;
+  };
 };
 
 export type ProfileScreenProp = StackNavigationProp<
