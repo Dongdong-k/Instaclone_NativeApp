@@ -13,6 +13,7 @@ import {
 import styled from "styled-components/native";
 import DismissKeyboard from "../components/DismissKeyboard";
 import ScreenLayout from "../components/ScreenLayout";
+import useMe from "../hooks/useMe";
 
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -26,15 +27,15 @@ const SEND_MESSAGE_MUTATION = gql`
 const SEE_ROOM_QUERY = gql`
   query seeRoom($id: Int!) {
     seeRoom(id: $id) {
+      id
       messages {
         id
         payload
-        read
         user {
           userName
           avatar
         }
-        createdAt
+        read
       }
     }
   }
@@ -79,29 +80,90 @@ interface MessageContainerInterface {
 // navigation 으로 이동시 route, navigation prop 값 가지고 있음
 // route 내 전달받은 Prop 확인가능
 export default function Room({ route, navigation }: any) {
-  const { register, setValue, handleSubmit } = useForm();
+  const { data: meData } = useMe(); // cache 업데이트를 위해 가져오기
+  const { register, setValue, handleSubmit, getValues, watch } = useForm();
+
+  // mutation 결과값 가져오기 & cache 업데이트하기
+  const updateSendMessage = (cache: any, result: any) => {
+    const {
+      data: {
+        sendMessage: { ok, id },
+      },
+    } = result;
+    if (ok && meData) {
+      // 입력한 값 가져오기
+      const { message } = getValues();
+      // 입력창 초기화하기
+      setValue("message", "");
+      // message 객체 만들기
+      const messageObj = {
+        id,
+        payload: message,
+        user: {
+          userName: meData.me.userName,
+          avatar: meData.me.avatar,
+        },
+        read: true,
+        __typename: "Message",
+      };
+      
+      // 캐시에 업데이트하기
+      const messageFragment = cache.writeFragment({
+        fragment: gql`
+          fragment NewMessage on Message {
+            id
+            payload
+            user {
+              userName
+              avatar
+            }
+            read
+          }
+        `,
+        data: messageObj,
+      });
+
+      // 해당 대화방에 메세지 넣기
+      // fields : 전 값 가지고 있는 함수를 사용
+      cache.modify({
+        id: `Room:${route.params.id}`,
+        fields: {
+          messages(prev: any) {
+            return [...prev, messageFragment];
+          },
+        },
+      });
+    }
+  };
+
+  // Query, Mutation
   const { data, loading, refetch } = useQuery(SEE_ROOM_QUERY, {
-    variables: { id: route.params.id },
+    variables: { id: route?.params?.id },
   });
   const [sendMessageMutation, { loading: sendingMessage }] = useMutation(
-    SEND_MESSAGE_MUTATION
+    SEND_MESSAGE_MUTATION,
+    {
+      update: updateSendMessage,
+    }
   );
 
-  console.log(data);
   // onVaild : 내부에 data 객채 존재
   const onValid = ({ message }: any) => {
-    sendMessageMutation({
-      variables: {
-        payload: message,
-        roomId: route?.params?.id,
-      },
-    });
+    if (!sendingMessage) {
+      sendMessageMutation({
+        variables: {
+          payload: message,
+          roomId: route?.params?.id,
+        },
+      });
+    }
   };
 
   // 메세지 입력 register
   useEffect(() => {
     register("message", { required: true });
   }, [register]);
+
   // 화면 전환시 타이블 가져와서 헤더 입력하기
   useEffect(() => {
     navigation.setOptions({
@@ -136,8 +198,8 @@ export default function Room({ route, navigation }: any) {
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          inverted={true} // 밑에서부터 데이터 출력됨
-          style={{ width: "100%" }}
+          style={{ width: "100%", paddingTop: 10 }}
+          ItemSeparatorComponent={() => <View style={{ height: 1 }}></View>}
           data={data?.seeRoom?.messages}
           keyExtractor={(messages: any) => "" + messages.id}
           renderItem={renderItem}
@@ -147,8 +209,10 @@ export default function Room({ route, navigation }: any) {
           placeholderTextColor={"rgba(255,255,255,0.5)"}
           returnKeyLabel="Send Message"
           returnKeyType="send"
-          onChangeText={(text: string) => setValue("message", text)}
+          onChangeText={(text: any) => setValue("message", text)}
           onSubmitEditing={handleSubmit(onValid)}
+          value={watch("message")}
+          blurOnSubmit={false} // 입력 눌러도 키보드 사라지지 않음
         />
       </ScreenLayout>
     </KeyboardAvoidingView>

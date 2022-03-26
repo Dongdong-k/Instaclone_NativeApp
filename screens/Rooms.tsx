@@ -18,7 +18,6 @@ const SEE_ROOMS_QUERY = gql`
 export default function Rooms() {
   const { data, loading, refetch } = useQuery(SEE_ROOMS_QUERY);
   const [refreshing, setRefreshing] = useState(false);
-  console.log(data);
 
   // refreshing
   const refresh = async () => {
