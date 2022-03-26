@@ -19,8 +19,6 @@ export default function Rooms() {
   const { data, loading, refetch } = useQuery(SEE_ROOMS_QUERY);
   const [refreshing, setRefreshing] = useState(false);
 
-  console.log("Show Query Result : ", data);
-
   // refreshing
   const refresh = async () => {
     setRefreshing(true);

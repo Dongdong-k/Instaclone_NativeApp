@@ -114,6 +114,7 @@ interface seeFeed_seeFeed_comments {
   createdAt: string;
 }
 
+// useNavigation type 지정
 type RootStackParamList = {
   Profile: {
     userName?: string;
