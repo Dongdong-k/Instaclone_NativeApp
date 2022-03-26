@@ -13,6 +13,8 @@ import PhotoContainer from "../components/PhotoContainer";
 import ScreenLayout from "../components/ScreenLayout";
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../Fragments";
 import { Ionicons } from "@expo/vector-icons";
+import useMe from "../hooks/useMe";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 
 const FEED_QUERY = gql`
   query seeFeed($offset: Int!) {
@@ -71,6 +73,7 @@ export default function Feed({ navigation }: any) {
     navigation.setOptions({
       headerRight: MessagesButton,
     });
+    refetch();
   }, []);
 
   return (

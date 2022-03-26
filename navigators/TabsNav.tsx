@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React from "react";
+import React, { useEffect } from "react";
 import TabIcon from "../components/nav/TabIcon";
 import { Image } from "react-native";
 import useMe from "../hooks/useMe";
@@ -8,7 +8,11 @@ import StackNavFactory from "./StackNavFactory";
 const Tabs = createBottomTabNavigator();
 
 export default function TabsNav() {
-  const { data } = useMe();
+  const { data, refetch } = useMe();
+  useEffect(() => {
+    refetch();
+  }, []);
+
   return (
     <Tabs.Navigator
       initialRouteName="FeedTabs"

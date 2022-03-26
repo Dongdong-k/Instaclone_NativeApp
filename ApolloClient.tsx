@@ -9,6 +9,7 @@ import { setContext } from "@apollo/client/link/context";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 import { onError } from "@apollo/client/link/error";
 import { createUploadLink } from "apollo-upload-client";
+import { CachePersistor } from "apollo3-cache-persist";
 
 // 로그인 관련 변수 생성 & false 설정
 export const isLoggedInVar = makeVar(false); // 로그인 여부 확인
@@ -24,7 +25,8 @@ export const logUserIn = async (token: any) => {
 };
 
 export const logUserOut = async () => {
-  await AsyncStorage.removeItem(TOKEN);
+  console.log("logOut");
+  await AsyncStorage.clear();
   isLoggedInVar(false);
   tokenVar("");
 };

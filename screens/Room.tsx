@@ -14,6 +14,8 @@ import styled from "styled-components/native";
 import DismissKeyboard from "../components/DismissKeyboard";
 import ScreenLayout from "../components/ScreenLayout";
 import useMe from "../hooks/useMe";
+import { Ionicons } from "@expo/vector-icons";
+import { color } from "../color";
 
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -65,13 +67,24 @@ const Message = styled.Text`
 `;
 
 const MessageInput = styled.TextInput`
-  margin: 20px 0;
-  width: 95%;
   border: 1px solid rgba(255, 255, 255, 0.5);
   padding: 5px 20px;
   border-radius: 1000px;
   color: white;
+  width: 90%;
+  margin-right: 10px;
 `;
+
+const InputContainer = styled.View`
+  margin: 20px 0;
+  width: 95%;
+  margin-top: 50px;
+  margin-top: 25px;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const SendButton = styled.TouchableOpacity``;
 
 interface MessageContainerInterface {
   outGoing: boolean; // 본인여부 확인용 props 추가
@@ -106,7 +119,7 @@ export default function Room({ route, navigation }: any) {
         read: true,
         __typename: "Message",
       };
-      
+
       // 캐시에 업데이트하기
       const messageFragment = cache.writeFragment({
         fragment: gql`
@@ -185,6 +198,12 @@ export default function Room({ route, navigation }: any) {
       </MessageContainer>
     );
   };
+
+  // 데이터 정렬을 위한 데이터 저장
+  // reverse() 사용 예정이나 Flatlist에서 불러오는 경우 read-only 상태로 변경 불가
+  // messages 존재하지 않는 경우에는 빈 배열 반환
+  const messages = [...(data?.seeRoom?.messages ?? [])];
+  messages.reverse(); // 순서 변경
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -198,22 +217,39 @@ export default function Room({ route, navigation }: any) {
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          style={{ width: "100%", paddingTop: 10 }}
+          style={{ width: "100%", marginVertical: 10 }}
+          inverted
           ItemSeparatorComponent={() => <View style={{ height: 1 }}></View>}
-          data={data?.seeRoom?.messages}
+          data={messages}
           keyExtractor={(messages: any) => "" + messages.id}
           renderItem={renderItem}
         />
-        <MessageInput
-          placeholder="Write a message..."
-          placeholderTextColor={"rgba(255,255,255,0.5)"}
-          returnKeyLabel="Send Message"
-          returnKeyType="send"
-          onChangeText={(text: any) => setValue("message", text)}
-          onSubmitEditing={handleSubmit(onValid)}
-          value={watch("message")}
-          blurOnSubmit={false} // 입력 눌러도 키보드 사라지지 않음
-        />
+        <InputContainer>
+          <MessageInput
+            placeholder="Write a message..."
+            placeholderTextColor={"rgba(255,255,255,0.5)"}
+            returnKeyLabel="Send Message"
+            returnKeyType="send"
+            onChangeText={(text: any) => setValue("message", text)}
+            onSubmitEditing={handleSubmit(onValid)}
+            value={watch("message")}
+            blurOnSubmit={false} // 입력 눌러도 키보드 사라지지 않음
+          />
+          <SendButton
+            disabled={!Boolean(watch("message"))}
+            onPress={handleSubmit(onValid)}
+          >
+            <Ionicons
+              name="send"
+              color={
+                !Boolean(watch("message"))
+                  ? "rgba(255,255,255,0.2)"
+                  : `${color.blue}`
+              }
+              size={22}
+            />
+          </SendButton>
+        </InputContainer>
       </ScreenLayout>
     </KeyboardAvoidingView>
   );
