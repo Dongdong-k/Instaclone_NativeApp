@@ -1,6 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { SortBy } from "expo-media-library";
 import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -13,7 +14,7 @@ import styled from "styled-components/native";
 import DismissKeyboard from "../components/DismissKeyboard";
 import ScreenLayout from "../components/ScreenLayout";
 
-const SENT_MESSAGE_MUTATION = gql`
+const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
     sendMessage(payload: $payload, roomId: $roomId, userId: $userId) {
       ok
@@ -78,11 +79,29 @@ interface MessageContainerInterface {
 // navigation 으로 이동시 route, navigation prop 값 가지고 있음
 // route 내 전달받은 Prop 확인가능
 export default function Room({ route, navigation }: any) {
+  const { register, setValue, handleSubmit } = useForm();
   const { data, loading, refetch } = useQuery(SEE_ROOM_QUERY, {
     variables: { id: route.params.id },
   });
+  const [sendMessageMutation, { loading: sendingMessage }] = useMutation(
+    SEND_MESSAGE_MUTATION
+  );
 
   console.log(data);
+  // onVaild : 내부에 data 객채 존재
+  const onValid = ({ message }: any) => {
+    sendMessageMutation({
+      variables: {
+        payload: message,
+        roomId: route?.params?.id,
+      },
+    });
+  };
+
+  // 메세지 입력 register
+  useEffect(() => {
+    register("message", { required: true });
+  }, [register]);
   // 화면 전환시 타이블 가져와서 헤더 입력하기
   useEffect(() => {
     navigation.setOptions({
@@ -128,6 +147,8 @@ export default function Room({ route, navigation }: any) {
           placeholderTextColor={"rgba(255,255,255,0.5)"}
           returnKeyLabel="Send Message"
           returnKeyType="send"
+          onChangeText={(text: string) => setValue("message", text)}
+          onSubmitEditing={handleSubmit(onValid)}
         />
       </ScreenLayout>
     </KeyboardAvoidingView>
