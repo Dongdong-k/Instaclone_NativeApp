@@ -44,6 +44,7 @@ const uploadHttpLink = createUploadLink({
   uri: "https://7fe9-175-113-96-12.ngrok.io/graphql",
 });
 
+// 모든 operation에서 발생
 const authLink = setContext((_, { headers }) => {
   return {
     headers: {
@@ -70,13 +71,14 @@ export const cache = new InMemoryCache({
 
 const httpLinks = authLink.concat(onErrorLink).concat(uploadHttpLink);
 
+// websocket 생성시 최초 1회 발생
 const wsLink = new WebSocketLink({
-  uri: "ws://localhost:4000/subscriptions",
+  uri: "ws://7fe9-175-113-96-12.ngrok.io/graphql",
   options: {
     reconnect: true,
-    connectionParams: {
+    connectionParams: () => ({
       token: tokenVar(),
-    },
+    }),
   },
 });
 

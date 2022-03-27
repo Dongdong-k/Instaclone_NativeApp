@@ -17,6 +17,20 @@ import useMe from "../hooks/useMe";
 import { Ionicons } from "@expo/vector-icons";
 import { color } from "../color";
 
+const ROOM_UPDATES_SUBSCRIPTION = gql`
+  subscription roomUpdates($id: Int!) {
+    roomUpdates(id: $id) {
+      id
+      payload
+      user {
+        userName
+        avatar
+      }
+      read
+    }
+  }
+`;
+
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
     sendMessage(payload: $payload, roomId: $roomId, userId: $userId) {
@@ -150,7 +164,7 @@ export default function Room({ route, navigation }: any) {
   };
 
   // Query, Mutation
-  const { data, loading, refetch } = useQuery(SEE_ROOM_QUERY, {
+  const { data, loading, refetch, subscribeToMore } = useQuery(SEE_ROOM_QUERY, {
     variables: { id: route?.params?.id },
   });
   const [sendMessageMutation, { loading: sendingMessage }] = useMutation(
@@ -184,6 +198,19 @@ export default function Room({ route, navigation }: any) {
     });
     refetch();
   }, []);
+
+  // subscribeToMore
+  useEffect(() => {
+    // 대화방 데이터를 받은 이후
+    if (data?.seeRoom) {
+      subscribeToMore({
+        document: ROOM_UPDATES_SUBSCRIPTION,
+        variables: {
+          id: route?.params?.id,
+        },
+      });
+    }
+  }, [data]);
 
   const renderItem = ({ item: messages }: any) => {
     return (
