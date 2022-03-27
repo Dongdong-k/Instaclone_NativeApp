@@ -47,6 +47,7 @@ export default function Feed({ navigation }: any) {
 
   // Pull to Refresh
   const [refreshing, setRefreshing] = useState(false);
+  const [firstLoggedIn, setFirstLoggedIn] = useState(true);
 
   const refresh = async () => {
     setRefreshing(true);
@@ -73,8 +74,12 @@ export default function Feed({ navigation }: any) {
     navigation.setOptions({
       headerRight: MessagesButton,
     });
-    refetch();
   }, []);
+
+  useEffect(() => {
+    refetch();
+    setFirstLoggedIn(false);
+  }, [firstLoggedIn]);
 
   return (
     <ScreenLayout loading={loading}>

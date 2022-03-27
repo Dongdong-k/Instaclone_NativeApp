@@ -26,7 +26,7 @@ export const logUserIn = async (token: any) => {
 
 export const logUserOut = async () => {
   console.log("logOut");
-  await AsyncStorage.clear();
+  await AsyncStorage.multiRemove([TOKEN, "apollo-cache-persist"]); // token, apollo-cache 등 모두 삭제
   isLoggedInVar(false);
   tokenVar("");
 };

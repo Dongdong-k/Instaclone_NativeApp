@@ -204,11 +204,12 @@ export default function Room({ route, navigation }: any) {
   // messages 존재하지 않는 경우에는 빈 배열 반환
   const messages = [...(data?.seeRoom?.messages ?? [])];
   messages.reverse(); // 순서 변경
+
   return (
     <KeyboardAvoidingView
       behavior="padding"
       keyboardVerticalOffset={
-        Platform.OS === "android" ? -300 : Platform.OS === "ios" ? 50 : 0
+        Platform.OS === "android" ? -300 : Platform.OS === "ios" ? 100 : 0
       }
       style={{
         flex: 1,

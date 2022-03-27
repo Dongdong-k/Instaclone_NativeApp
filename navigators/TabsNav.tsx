@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TabIcon from "../components/nav/TabIcon";
 import { Image } from "react-native";
 import useMe from "../hooks/useMe";
@@ -9,9 +9,11 @@ const Tabs = createBottomTabNavigator();
 
 export default function TabsNav() {
   const { data, refetch } = useMe();
+  const [firstLoggedIn, setFirstLoggedIn] = useState(true);
   useEffect(() => {
     refetch();
-  }, []);
+    setFirstLoggedIn(false);
+  }, [firstLoggedIn]);
 
   return (
     <Tabs.Navigator

@@ -152,13 +152,7 @@ export default function PhotoContainer({
 
   // 스크린 사이즈 받아와서 width 설정 & height 크기도 화면보다 클 경우 화면 크기로 설정
   useEffect(() => {
-    Image.getSize(file, (width, height) => {
-      if (height > windowHeight) {
-        setImageHeight(windowWidth);
-      } else {
-        setImageHeight(height);
-      }
-    });
+    setImageHeight(windowWidth);
   }, []);
 
   const updateToggleLike = (cache: any, result: any) => {

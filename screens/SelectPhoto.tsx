@@ -42,9 +42,9 @@ export default function SelectPhoto({ navigation }: any) {
   // Flatlist 하단 도달시 사진 추가 로딩하기
   const getPhotos = async () => {
     console.log("load photos");
-    console.log("photoNumbers 전 : ", photoNumbers);
+    // console.log("photoNumbers 전 : ", photoNumbers);
     setPhotoNumber(photoNumbers + 20);
-    console.log("photoNumbers 후 : ", photoNumbers);
+    // console.log("photoNumbers 후 : ", photoNumbers);
   };
 
   const getalbums = async () => {
@@ -54,25 +54,28 @@ export default function SelectPhoto({ navigation }: any) {
       sortBy: MediaLibrary.SortBy.creationTime,
       first: photoNumbers,
     });
-    setPhotos(photos); // 가져온 데이터 저장하기
+    await setPhotos(photos); // 가져온 데이터 저장하기
     // 첫 로딩시에만 첫 사진 선택
     if (chosenPhoto === "") {
       setChosenPhoto(photos[0].uri);
     }
   };
+
   const getPermissions = async () => {
     // 권한 확인 및 요청하기
     const { accessPrivileges, canAskAgain } =
       await MediaLibrary.getPermissionsAsync();
-    // console.log(accessPrivileges, canAskAgain, ok);
-    if (accessPrivileges === ("none" || "undefined") && canAskAgain) {
+    // console.log(
+    //   `accessPrivileges : ${accessPrivileges}, canAskAgain : ${canAskAgain}, ok:${ok}`
+    // );
+    if (accessPrivileges === undefined && canAskAgain) {
       // 권한요청 아직 요청 안함 && 권한요청 가능여부 확인 ==> 권한요청하기
       const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync();
+      // console.log("accessPrivileges : ", accessPrivileges);
       if (accessPrivileges !== "none") {
         // 권한 요청 후 수락한 경우
         setOk(true);
         getalbums();
-        setChosenPhoto(photos[0].uri); // 첫 로딩시에만 첫 사진 선택
       }
     } else if (accessPrivileges !== "none") {
       // 권한 확인시 권한이 있는 경우
